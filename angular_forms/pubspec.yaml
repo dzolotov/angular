@@ -12,7 +12,11 @@ dependencies:
   meta: ^1.1.4
 
 dev_dependencies:
-  angular_test: ^2.3.0
+  angular_test:
+    git:
+      url: https://github.com/dzolotov/angular
+      ref: master
+      path: angular_test
   build_runner: ^1.0.0
   build_test: ^0.10.2+5
   build_web_compilers: ^1.0.0
