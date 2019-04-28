@@ -8,14 +8,22 @@ environment:
   sdk: ">=2.2.1-dev.3.0 <3.0.0"
 
 dependencies:
-  angular: ^5.3.0
+  angular:
+    git:
+      url: https://github.com/dzolotov/angular
+      ref: master
+      path: angular
   collection: ^1.14.5
   js: ^0.6.0
   meta: ^1.1.4
 
 dev_dependencies:
   async: ^2.0.3
-  angular_test: ^2.3.0
+  angular_test:
+    git:
+      url: https://github.com/dzolotov/angular
+      ref: master
+      path: angular_test
   build_runner: ^1.0.0
   build_test: ^0.10.2+5
   build_web_compilers: ^1.0.0
