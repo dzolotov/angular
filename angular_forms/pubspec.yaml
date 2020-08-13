@@ -9,7 +9,7 @@ environment:
 dependencies:
   angular:
     git:
-      url: https://github.com/dart-lang/angular
+      url: https://github.com/dzolotov/angular
       ref: master
       path: angular
   meta: ^1.1.4
@@ -17,7 +17,7 @@ dependencies:
 dev_dependencies:
   angular_test:
     git:
-      url: https://github.com/dart-lang/angular
+      url: https://github.com/dzolotov/angular
       ref: master
       path: angular_test
   build_runner: ^1.0.0
