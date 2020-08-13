@@ -8,7 +8,7 @@ import 'package:angular/src/core/linker/views/view.dart';
 
 import 'change_detection.dart';
 
-/// A host for tracking the current application and stateful components.
+/// A host for tracking the current application.
 ///
 /// This is expected to the base class for an `ApplicationRef`, and eventually
 /// could be merged in directly to avoid having inheritance if necessary. For
@@ -101,9 +101,11 @@ abstract class ChangeDetectionHost {
       detectors[i].detectChanges();
     }
     if (isDevMode) {
+      debugEnterThrowOnChanged();
       for (var i = 0; i < length; i++) {
-        detectors[i].checkNoChanges();
+        detectors[i].detectChanges();
       }
+      debugExitThrowOnChanged();
     }
   }
 
@@ -182,11 +184,11 @@ abstract class ChangeDetectionHost {
       try {
         result = callback();
         if (result is Future<Object>) {
-          final Future<R> resultCast = unsafeCast(result);
+          final resultCast = unsafeCast<Future<R>>(result);
           resultCast.then((result) {
             completer.complete(result);
           }, onError: (e, s) {
-            final StackTrace sCasted = unsafeCast(s);
+            final sCasted = unsafeCast<StackTrace>(s);
             completer.completeError(e, sCasted);
             handleUncaughtException(e, sCasted);
           });

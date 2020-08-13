@@ -1,49 +1,26 @@
 import 'dart:html';
 
 import 'package:angular/src/core/linker/view_container.dart';
-import 'package:angular/src/core/linker/view_ref.dart' show ViewRef;
-import 'package:angular/src/runtime/dom_helpers.dart';
+import 'package:angular/src/core/linker/view_fragment.dart';
+import 'package:angular/src/core/linker/view_ref.dart';
 
 import 'view.dart';
 
-/// A view that can be dynamically created and destroyed.
-abstract class DynamicView extends View implements ViewRef {
-  /// This view's root DOM nodes.
-  ///
-  /// Any root view containers are recursively flattened until only HTML nodes
-  /// remain.
-  List<Node> get flatRootNodes;
-
-  /// This view's last root DOM node.
-  ///
-  /// If the last root element is a view container, the view container's last
-  /// root node is returned.
-  Node get lastRootNode;
+/// An interface for views that can be dynamically created and destroyed.
+///
+/// Note that generated views should never extend this class directly, but
+/// rather one of its specializations.
+abstract class DynamicView implements View, ViewRef {
+  /// Tracks the root DOM nodes or view containers of this view.
+  ViewFragment get viewFragment;
 
   /// Appends this view's root DOM nodes as siblings after [node].
-  void addRootNodesAfter(Node node) {
-    insertNodesAsSibling(flatRootNodes, node);
-    domRootRendererIsDirty = true;
-  }
+  // TODO(b/132109599): replace with single static method or function.
+  void addRootNodesAfter(Node node);
 
   /// Removes this view's root DOM nodes from their parent [ViewContainer].
-  void removeRootNodes() {
-    final nodes = flatRootNodes;
-    removeNodes(nodes);
-    domRootRendererIsDirty = domRootRendererIsDirty || nodes.isNotEmpty;
-  }
-
-  /// Appends this view's root DOM nodes to [target].
-  ///
-  /// This method is equivalent to appending [flatRootNodes] to [target], but is
-  /// more efficient since it doesn't store them in an intermediate list.
-  void addRootNodesTo(List<Node> target);
-
-  /// Appends this view's root DOM nodes to [parent]'s children.
-  ///
-  /// This method is equivalent to `addRootNodesTo(parent.children)`, but is
-  /// more efficient since it doesn't require computing `[Element.children]`.
-  void addRootNodesToChildrenOf(Element parent);
+  // TODO(b/132109599): replace with single static method or function.
+  void removeRootNodes();
 
   /// Notifies this view that it was inserted into [viewContainer].
   ///
@@ -59,4 +36,21 @@ abstract class DynamicView extends View implements ViewRef {
   ///
   /// This is invoked by the [ViewContainer] from which this view was removed.
   void wasRemoved();
+}
+
+/// The interface for [DynamicView] data bundled together as an optimization.
+///
+/// Similar to [ViewData], this interface exists solely as a common point for
+/// documentation.
+abstract class DynamicViewData implements ViewData {
+  /// The container in which this view is currently inserted.
+  ///
+  /// Null if this view is currently detached.
+  ViewContainer get viewContainer;
+
+  /// Storage for [DynamicView.viewFragment].
+  ViewFragment get viewFragment;
+
+  /// Registers a [callback] to be invoked by [destroy].
+  void addOnDestroyCallback(void Function() callback);
 }

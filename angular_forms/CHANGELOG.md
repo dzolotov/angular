@@ -1,3 +1,13 @@
+*   Release for `3.0.0`.
+
+## 2.1.4
+
+*   Maintenance release to support Angular 6.0-alpha+1.
+
+## 2.1.3
+
+*   Maintenance release to support Angular 6.0-alpha.
+
 ## 2.1.2
 
 *   Maintenance release to support Angular 5.3.

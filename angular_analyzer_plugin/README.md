@@ -1,8 +1,4 @@
-** WARNING: ** You are looking at a copy of [https://github.com/dart-lang/angular_analyzer_plugin].
-We are in the process of moving that repo into the angular repo. This is still
-ongoing and so the code here is not complete.
-
-[![Build Status](https://travis-ci.org/dart-lang/angular_analyzer_plugin.svg?branch=master)](https://travis-ci.org/dart-lang/angular_analyzer_plugin) [![pub package](https://img.shields.io/pub/v/angular_analyzer_plugin.svg)](https://pub.dartlang.org/packages/angular_analyzer_plugin)
+[![pub package](https://img.shields.io/pub/v/angular_analyzer_plugin.svg)](https://pub.dev/packages/angular_analyzer_plugin)
 
 **Requires angular-5.0.0\* and dart SDK 2.0.0-dev.31\*\* or higher to work.**
 
@@ -15,8 +11,6 @@ ongoing and so the code here is not complete.
   To provide information for DAS clients the `server_plugin` plugin contributes several extensions.
 
 * Angular analysis errors are automatically merged into normal `errors` notifications for Dart and HTML files.
-
-![Preview gif](https://raw.githubusercontent.com/dart-lang/angular_analyzer_plugin/master/assets/angular-dart-intellij-plugin-demo.gif "Preview gif")
 
 ## Installing By Angular Version -- For Angular Developers (recommended)
 

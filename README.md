@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/dart-lang/logos/master/logos_and_wordmarks/angulardart-logo.png" alt="AngularDart Logo">
+  <img src="https://raw.githubusercontent.com/dart-lang/angular/master/doc/angulardart-logo.png" alt="AngularDart Logo">
   <h1>AngularDart</h1>
 </p>
 
 <!-- Badges -->
 
-[![Pub Package](https://img.shields.io/pub/v/angular.svg)](https://pub.dartlang.org/packages/angular)
+[![Pub Package](https://img.shields.io/pub/v/angular.svg)](https://pub.dev/packages/angular)
 [![Build Status](https://travis-ci.org/dart-lang/angular.svg?branch=master)](https://travis-ci.org/dart-lang/angular)
 [![Gitter](https://img.shields.io/gitter/room/dart-lang/angular.svg)](https://gitter.im/dart-lang/angular)
 
@@ -62,9 +62,9 @@ a set of [community contributed tutorials][comm].
 [fiber]: http://news.dartlang.org/2015/11/how-google-uses-angular-2-with-dart.html
 [webdev_angular]: https://webdev.dartlang.org/angular
 [dart_web]: https://webdev.dartlang.org/
-[pub_angular]: https://pub.dartlang.org/packages/angular
-[pub_angular_components]: https://pub.dartlang.org/packages/angular_components
-[pub_angular_forms]: https://pub.dartlang.org/packages/angular_forms
-[pub_angular_router]: https://pub.dartlang.org/packages/angular_router
-[pub_angular_test]: https://pub.dartlang.org/packages/angular_test
+[pub_angular]: https://pub.dev/packages/angular
+[pub_angular_components]: https://pub.dev/packages/angular_components
+[pub_angular_forms]: https://pub.dev/packages/angular_forms
+[pub_angular_router]: https://pub.dev/packages/angular_router
+[pub_angular_test]: https://pub.dev/packages/angular_test
 [contribute]: https://github.com/dart-lang/angular/blob/master/CONTRIBUTING.md

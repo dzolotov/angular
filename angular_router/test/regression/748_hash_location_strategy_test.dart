@@ -19,7 +19,7 @@ void main() {
   tearDown(disposeAnyRunningTest);
 
   test('browser location should match clicked href', () async {
-    final testBed = NgTestBed.forComponent(ng.AppComponentNgFactory,
+    final testBed = NgTestBed.forComponent(ng.createAppComponentFactory(),
         rootInjector: injectorFactory);
     final testFixture = await testBed.create();
     expect(testFixture.assertOnlyInstance.anchor.getAttribute('href'), '#/foo');
@@ -36,7 +36,7 @@ class MockPlatformLocation extends Mock implements BrowserPlatformLocation {}
 
 @GenerateInjector([
   routerProvidersHash,
-  const FactoryProvider(PlatformLocation, platformLocationFactory),
+  FactoryProvider(PlatformLocation, platformLocationFactory),
 ])
 InjectorFactory injectorFactory = ng.injectorFactory$Injector;
 
@@ -51,7 +51,7 @@ InjectorFactory injectorFactory = ng.injectorFactory$Injector;
 class AppComponent {
   static final fooRoute = RouteDefinition(
     path: '/foo',
-    component: ng.FooComponentNgFactory,
+    component: ng.createFooComponentFactory(),
   );
   static final routes = [fooRoute];
 

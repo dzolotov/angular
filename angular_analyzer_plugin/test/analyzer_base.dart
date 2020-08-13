@@ -13,10 +13,9 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:analyzer/src/source/package_map_resolver.dart';
+import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-
-import 'mock_sdk.dart';
 
 /// Base shared functionality for tests that rely on dart analysis
 class AnalyzerTestBase {
@@ -147,15 +146,15 @@ class GatheringErrorListener implements AnalysisErrorListener {
 
       if (actualCount != expectedCount) {
         if (errorMessageBuffer.isEmpty) {
-          errorMessageBuffer.write("Expected ");
+          errorMessageBuffer.write('Expected ');
         } else {
-          errorMessageBuffer.write("; ");
+          errorMessageBuffer.write('; ');
         }
         errorMessageBuffer
           ..write(expectedCount)
-          ..write(" errors of type ")
+          ..write(' errors of type ')
           ..write(code.uniqueName)
-          ..write(", found ")
+          ..write(', found ')
           ..write(actualCount);
       }
     });
@@ -167,18 +166,18 @@ class GatheringErrorListener implements AnalysisErrorListener {
       StringBuffer errorMessageBuffer) {
     errorsByCode.forEach((code, actualErrors) {
       if (errorMessageBuffer.isEmpty) {
-        errorMessageBuffer.write("Expected ");
+        errorMessageBuffer.write('Expected ');
       } else {
-        errorMessageBuffer.write("; ");
+        errorMessageBuffer.write('; ');
       }
       errorMessageBuffer
-        ..write("0 errors of type ")
+        ..write('0 errors of type ')
         ..write(code.uniqueName)
-        ..write(", found ")
+        ..write(', found ')
         ..write(actualErrors.length)
-        ..write(" (")
+        ..write(' (')
         ..write(actualErrors.map((error) => error.offset).join(', '))
-        ..write(")");
+        ..write(')');
     });
   }
 
@@ -196,7 +195,7 @@ class GatheringErrorListener implements AnalysisErrorListener {
   void _expectNonEmptyMessages(List<ErrorCode> expectedErrorCodes) {
     for (final errorCode in expectedErrorCodes) {
       expect(errorCode.message.isEmpty, isFalse,
-          reason: "Empty error code message");
+          reason: 'Empty error code message');
     }
   }
 

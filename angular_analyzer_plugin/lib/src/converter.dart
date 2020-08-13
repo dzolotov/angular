@@ -96,7 +96,7 @@ class EmbeddedDartParser {
         }
         final length = token.offset - startCloseBracket;
         errorListener.onError(AnalysisError(templateSource, startCloseBracket,
-            length, ParserErrorCode.UNEXPECTED_TOKEN, ["}"]));
+            length, ParserErrorCode.UNEXPECTED_TOKEN, ['}']));
         continue;
       } else {
         //Nothing should trigger here, but just in case to prevent infinite loop
@@ -130,7 +130,7 @@ class EmbeddedDartParser {
 
         // get the local variable name
         token = token.next;
-        var localVarName = "";
+        var localVarName = '';
         var localVarOffset = token.offset;
         if (!_tokenMatchesIdentifier(token)) {
           errorReporter.reportErrorForToken(
@@ -312,7 +312,7 @@ class HtmlTreeConverter {
     }
     for (final node in asts) {
       final convertedNode =
-          node.accept(new _HtmlTreeConverterVisitor(this), parent);
+          node.accept(_HtmlTreeConverterVisitor(this), parent);
       if (convertedNode != null) {
         parent.childNodes.add(convertedNode);
       }
@@ -412,8 +412,7 @@ class HtmlTreeConverter {
       StandaloneTemplateAst node, ElementInfo parent) {
     final children = <NodeInfo>[];
     for (final child in node.childNodes) {
-      final childNode =
-          child.accept(new _HtmlTreeConverterVisitor(this), parent);
+      final childNode = child.accept(_HtmlTreeConverterVisitor(this), parent);
       if (childNode != null) {
         children.add(childNode);
         if (childNode is ElementInfo) {
@@ -522,7 +521,7 @@ class HtmlTreeConverter {
     final suffixToken = ast.suffixToken;
 
     final prefixComponent =
-        (prefixToken.errorSynthetic ? '' : prefixToken.lexeme);
+        prefixToken.errorSynthetic ? '' : prefixToken.lexeme;
     final suffixComponent =
         ((suffixToken == null) || suffixToken.errorSynthetic)
             ? ''
@@ -580,7 +579,7 @@ class HtmlTreeConverter {
       if (value != null) {
         final whitespacePad =
             ' ' * (ast.valueToken.innerValue.offset - ast.nameToken.end);
-        fullAstName = "${ast.name}$whitespacePad${value ?? ''}";
+        fullAstName = '${ast.name}$whitespacePad${value ?? ''}';
       } else {
         fullAstName = '${ast.name} ';
       }
@@ -722,9 +721,96 @@ class HtmlTreeConverter {
       SourceRange(offset, length);
 }
 
+class _ThrowingTemplateAstVisitor<R, C> implements TemplateAstVisitor<R, C> {
+  @override
+  R visitAnnotation(AnnotationAst astNode, [C context]) {
+    throw UnsupportedError('visiting AnnotationAst not supported');
+  }
+
+  @override
+  R visitAttribute(AttributeAst astNode, [C context]) {
+    throw UnsupportedError('visiting AttributeAst not supported');
+  }
+
+  @override
+  R visitBanana(BananaAst astNode, [C context]) {
+    throw UnsupportedError('visiting BananaAst not supported');
+  }
+
+  @override
+  R visitCloseElement(CloseElementAst astNode, [C context]) {
+    throw UnsupportedError('visiting CloseElementAst not supported');
+  }
+
+  @override
+  R visitComment(CommentAst astNode, [C context]) {
+    throw UnsupportedError('visiting CommentAst not supported');
+  }
+
+  @override
+  R visitEvent(EventAst astNode, [C context]) {
+    throw UnsupportedError('visiting EventAst not supported');
+  }
+
+  @override
+  R visitExpression(ExpressionAst<Object> astNode, [C context]) {
+    throw UnsupportedError('visiting ExpressionAst not supported');
+  }
+
+  @override
+  R visitLetBinding(LetBindingAst astNode, [C context]) {
+    throw UnsupportedError('visiting LetBindingAst not supported');
+  }
+
+  @override
+  R visitProperty(PropertyAst astNode, [C context]) {
+    throw UnsupportedError('visiting PropertyAst not supported');
+  }
+
+  @override
+  R visitReference(ReferenceAst astNode, [C context]) {
+    throw UnsupportedError('visiting ReferenceAst not supported');
+  }
+
+  @override
+  R visitStar(StarAst astNode, [C context]) {
+    throw UnsupportedError('visiting StarAst not supported');
+  }
+
+  @override
+  R visitContainer(ContainerAst astNode, [C context]) {
+    throw UnsupportedError('visiting ContainerAst not supported');
+  }
+
+  @override
+  R visitElement(ElementAst astNode, [C context]) {
+    throw UnsupportedError('visiting ElementAst not supported');
+  }
+
+  @override
+  R visitEmbeddedContent(EmbeddedContentAst astNode, [C context]) {
+    throw UnsupportedError('visiting EmbeddedContentAst not supported');
+  }
+
+  @override
+  R visitEmbeddedTemplate(EmbeddedTemplateAst astNode, [C context]) {
+    throw UnsupportedError('visiting EmbeddedTemplateAst not supported');
+  }
+
+  @override
+  R visitInterpolation(InterpolationAst astNode, [C context]) {
+    throw UnsupportedError('visiting InterpolationAst not supported');
+  }
+
+  @override
+  R visitText(TextAst astNode, [C context]) {
+    throw UnsupportedError('visiting TextAst not supported');
+  }
+}
+
 /// A private visitor used by [HtmlTreeConverter] to begin conversion.
 class _HtmlTreeConverterVisitor
-    extends ThrowingTemplateAstVisitor<NodeInfo, ElementInfo> {
+    extends _ThrowingTemplateAstVisitor<NodeInfo, ElementInfo> {
   final HtmlTreeConverter _converter;
 
   _HtmlTreeConverterVisitor(this._converter);
@@ -770,13 +856,13 @@ class _HtmlTreeConverterVisitor
     final attributes = <AttributeInfo>[];
 
     if (astNode is ParsedEmbeddedContentAst) {
-      final valueToken = astNode.selectorValueToken;
-      if (astNode.selectToken != null) {
+      final selectAttribute = astNode.selectAttribute as ParsedAttributeAst;
+      if (selectAttribute?.name != null) {
         attributes.add(TextAttribute(
           'select',
-          astNode.selectToken.offset,
-          valueToken?.innerValue?.lexeme,
-          valueToken?.innerValue?.offset,
+          selectAttribute.nameOffset,
+          selectAttribute.value,
+          selectAttribute.valueOffset,
           [],
         ));
       }
@@ -837,7 +923,7 @@ class IgnorableHtmlInternalException implements Exception {
   IgnorableHtmlInternalException(this.msg);
 
   @override
-  String toString() => "IgnorableHtmlInternalException: $msg";
+  String toString() => 'IgnorableHtmlInternalException: $msg';
 }
 
 class _VirtualAttributes {

@@ -142,7 +142,7 @@ class HumanizingTemplateAstVisitor
     StringBuffer context,
   ]) {
     context ??= StringBuffer();
-    context..write('<template');
+    context.write('<template');
     if (astNode.annotations.isNotEmpty) {
       context
         ..write(' ')
@@ -172,7 +172,7 @@ class HumanizingTemplateAstVisitor
     if (astNode.childNodes.isNotEmpty) {
       context.writeAll(astNode.childNodes.map((c) => c.accept(this)));
     }
-    context..write('</template>');
+    context.write('</template>');
     return context.toString();
   }
 
@@ -181,7 +181,7 @@ class HumanizingTemplateAstVisitor
     context ??= StringBuffer();
     context.write('(${astNode.name}');
     if (astNode.reductions.isNotEmpty) {
-      context.write('.${astNode.reductions.join(".")}');
+      context.write('.${astNode.reductions.join('.')}');
     }
     context.write(')');
     if (astNode.value != null) {

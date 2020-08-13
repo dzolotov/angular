@@ -5,10 +5,10 @@ import 'package:angular_test/angular_test.dart';
 import 'package:test/test.dart';
 import 'package:angular/angular.dart';
 
-import 'binding_test.template.dart' as ng_generated;
+import 'binding_test.template.dart' as ng;
 
 void main() {
-  ng_generated.initReflector();
+  ng.initReflector();
 
   tearDown(disposeAnyRunningTest);
 
@@ -153,7 +153,7 @@ class ChildComponent {
 abstract class ValueTest {
   ChildComponent get child;
 
-  get expected;
+  dynamic get expected;
 }
 
 @Component(
@@ -167,7 +167,7 @@ class TestLiterals implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 10;
+  int get expected => 10;
 }
 
 @Component(
@@ -181,13 +181,13 @@ class TestStripQuotes implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 'string';
+  String get expected => 'string';
 }
 
 @Component(
   selector: 'test',
   directives: [ChildComponent],
-  template: '<child [value]="\'a\n\nb\'"></child>',
+  template: '''<child [value]="value"></child>''',
 )
 class TestNewLines implements ValueTest {
   @ViewChild(ChildComponent)
@@ -195,7 +195,10 @@ class TestNewLines implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 'a\n\nb';
+  String get expected => 'a\n\nb';
+
+  // TODO(b/136199519): Move the value back inline in the template.
+  var value = 'a\n\nb';
 }
 
 @Component(
@@ -209,7 +212,7 @@ class TestAddOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 12;
+  int get expected => 12;
 }
 
 @Component(
@@ -223,7 +226,7 @@ class TestMinusOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 8;
+  int get expected => 8;
 }
 
 @Component(
@@ -237,7 +240,7 @@ class TestMultiplyOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 20;
+  int get expected => 20;
 }
 
 @Component(
@@ -251,7 +254,7 @@ class TestDivisionOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 5;
+  int get expected => 5;
 }
 
 @Component(
@@ -265,7 +268,7 @@ class TestModulusOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 1;
+  int get expected => 1;
 }
 
 @Component(
@@ -279,7 +282,7 @@ class TestEqualityOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -293,7 +296,7 @@ class TestNotEqualsOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => isFalse;
+  Matcher get expected => isFalse;
 }
 
 @Component(
@@ -307,7 +310,7 @@ class TestIdentityOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -321,7 +324,7 @@ class TestNotIdenticalOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => isFalse;
+  Matcher get expected => isFalse;
 }
 
 @Component(
@@ -335,7 +338,7 @@ class TestLessThanOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -349,7 +352,7 @@ class TestGreaterThanOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -363,7 +366,7 @@ class TestLessThanOrEqualsOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -377,7 +380,7 @@ class TestGreaterThanOrEqualsOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -391,7 +394,7 @@ class TestAndOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => isFalse;
+  Matcher get expected => isFalse;
 }
 
 @Component(
@@ -409,7 +412,7 @@ class TestOrOperation implements ValueTest {
   bool get val2 => false;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -423,7 +426,7 @@ class TestNegateOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => isFalse;
+  Matcher get expected => isFalse;
 }
 
 @Component(
@@ -437,7 +440,7 @@ class TestDoubleNegationOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -451,7 +454,7 @@ class TestTernaryOperation implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => 'no';
+  String get expected => 'no';
 }
 
 @Component(
@@ -464,10 +467,10 @@ class TestMapAccess implements ValueTest {
   @override
   ChildComponent child;
 
-  get map => const {'foo': 'bar'};
+  Map<String, String> get map => const {'foo': 'bar'};
 
   @override
-  get expected => 'bar';
+  String get expected => 'bar';
 }
 
 @Component(
@@ -480,10 +483,10 @@ class TestListAccess implements ValueTest {
   @override
   ChildComponent child;
 
-  get list => const ['foo', 'bar'];
+  List<String> get list => const ['foo', 'bar'];
 
   @override
-  get expected => 'bar';
+  String get expected => 'bar';
 }
 
 @Component(
@@ -496,10 +499,10 @@ class TestPropertyAccess implements ValueTest {
   @override
   ChildComponent child;
 
-  get list => const ['foo', 'bar'];
+  List<String> get list => const ['foo', 'bar'];
 
   @override
-  get expected => 2;
+  int get expected => 2;
 }
 
 @Component(
@@ -512,10 +515,10 @@ class TestChainedPropertyAccess implements ValueTest {
   @override
   ChildComponent child;
 
-  get list => const ['foo', 'bar'];
+  List<String> get list => const ['foo', 'bar'];
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -528,10 +531,10 @@ class TestFunctionCall implements ValueTest {
   @override
   ChildComponent child;
 
-  get list => const ['foo', 'bar'];
+  List<String> get list => const ['foo', 'bar'];
 
   @override
-  get expected => true;
+  bool get expected => true;
 }
 
 @Component(
@@ -545,7 +548,7 @@ class TestAssignNull implements ValueTest {
   ChildComponent child;
 
   @override
-  get expected => isNull;
+  Matcher get expected => isNull;
 }
 
 @Component(
@@ -558,10 +561,10 @@ class TestElvisOperation implements ValueTest {
   @override
   ChildComponent child;
 
-  get map => null;
+  dynamic get map => null;
 
   @override
-  get expected => isNull;
+  Matcher get expected => isNull;
 }
 
 @Component(
@@ -574,8 +577,8 @@ class TestNullAwareOperation implements ValueTest {
   @override
   ChildComponent child;
 
-  get map => null;
+  dynamic get map => null;
 
   @override
-  get expected => 'Hello';
+  String get expected => 'Hello';
 }

@@ -1,3 +1,11 @@
+*   Release for `0.6.0`.
+
+## 0.5.11
+
+*   Maintenance release to support Dart 2.5 dev.
+
+## 0.5.10
+
 *   New `ThrowingTemplateAstVisitor` which throws by default in each visit
     method.
 

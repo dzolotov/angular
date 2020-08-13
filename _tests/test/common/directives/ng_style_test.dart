@@ -4,72 +4,69 @@ import 'package:angular_test/angular_test.dart';
 import 'package:test/test.dart';
 import 'package:angular/angular.dart';
 
-import 'ng_style_test.template.dart' as ng_generated;
+import 'ng_style_test.template.dart' as ng;
 
 void main() {
-  ng_generated.initReflector();
-
   group('ngStyle', () {
     tearDown(() => disposeAnyRunningTest());
 
-    test('should add styles specified in an map literal', () async {
-      var testBed = NgTestBed<MapLiteralTest>();
-      var testFixture = await testBed.create();
-      var content = testFixture.rootElement.querySelector('div');
-      expect(content.style.maxWidth, '40px');
-    });
     test('should update styles specified in an map literal', () async {
-      var testBed = NgTestBed<MapUpdateTest>();
+      var testBed = NgTestBed.forComponent(ng.createMapUpdateTestFactory());
       var testFixture = await testBed.create();
       var content = testFixture.rootElement.querySelector('div');
-      await testFixture.update((MapUpdateTest component) {
+      await testFixture.update((component) {
         component.map = {'max-width': '40px'};
       });
       expect(content.style.maxWidth, '40px');
-      await testFixture.update((MapUpdateTest component) {
+      await testFixture.update((component) {
         component.map['max-width'] = '30%';
       });
       expect(content.style.maxWidth, '30%');
     });
+
     test('should remove styles when deleting a key in a map literal', () async {
-      var testBed = NgTestBed<MapUpdateTest>();
+      var testBed = NgTestBed.forComponent(ng.createMapUpdateTestFactory());
       var testFixture = await testBed.create();
       var content = testFixture.rootElement.querySelector('div');
-      await testFixture.update((MapUpdateTest component) {
+      await testFixture.update((component) {
         component.map = {'max-width': '40px'};
       });
       expect(content.style.maxWidth, '40px');
-      await testFixture.update((MapUpdateTest component) {
+      await testFixture.update((component) {
         component.map.remove('max-width');
       });
       expect(content.style.maxWidth, '');
     });
+
     test('should cooperate with the style attribute', () async {
-      var testBed = NgTestBed<MapUpdateWithDefaultTest>();
+      var testBed =
+          NgTestBed.forComponent(ng.createMapUpdateWithDefaultTestFactory());
       var testFixture = await testBed.create();
       var content = testFixture.rootElement.querySelector('div');
-      await testFixture.update((MapUpdateWithDefaultTest component) {
+      await testFixture.update((component) {
         component.map = {'max-width': '40px'};
       });
       expect(content.style.maxWidth, '40px');
       expect(content.style.fontSize, '12px');
-      await testFixture.update((MapUpdateWithDefaultTest component) {
+      await testFixture.update((component) {
         component.map.remove('max-width');
       });
       expect(content.style.maxWidth, '');
       expect(content.style.fontSize, '12px');
     });
+
     test('should cooperate with the style.[styleName]="expr" special-case',
         () async {
-      var testBed = NgTestBed<MapUpdateWithStyleExprTest>();
+      var testBed =
+          NgTestBed.forComponent(ng.createMapUpdateWithStyleExprTestFactory());
       var testFixture = await testBed.create();
       var content = testFixture.rootElement.querySelector('div');
-      await testFixture.update((MapUpdateWithStyleExprTest component) {
+      await testFixture.update((component) {
         component.map = {'max-width': '40px'};
       });
       expect(content.style.maxWidth, '40px');
       expect(content.style.fontSize, '12px');
-      await testFixture.update((MapUpdateWithStyleExprTest component) {
+      await testFixture.update((component) {
         component.map.remove('max-width');
       });
       expect(content.style.maxWidth, '');
@@ -77,13 +74,6 @@ void main() {
     });
   });
 }
-
-@Component(
-  selector: 'map-literal-test',
-  directives: [NgStyle],
-  template: '<div [ngStyle]="{\'max-width\': \'40px\'}"></div>',
-)
-class MapLiteralTest {}
 
 @Component(
   selector: 'map-update-test',

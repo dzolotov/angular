@@ -1,4 +1,146 @@
-## Breaking changes
+### New features
+
+*   Added `debugClearComponentStyles()`. This top-level function resets all
+    static state used for component styles, and removes all component `<style>`
+    tags from the DOM. This can be called to prevent styles leaking between DDC
+    hot restarts or hermetic test cases. It can only be called in development
+    mode.
+
+*   Added `@i18n.locale`. This annotation overrides the locale of the message to
+    use, even if a translation is available for the current locale.
+
+    ```html
+    <!-- Use "en_US" even if translation for current locale exists. -->
+    <div @i18n="..." @i18n.locale="en_US">...</div>
+    ```
+
+*   Added `debugCheckBindings()`. This top-level function opts in to stricter
+    checking for template bindings and interpolation, and will often have some
+    contextual information (expression source and source location) for the
+    underlying failure. See `/docs/advanced/debugging.md` for details.
+
+*   Added `ChangeDetectorRef.markChildForCheck()`. This method can be used to
+    mark a child query for change detection when the underlying result is a
+    component that uses the OnPush change detection strategy.
+
+    ```
+    @Component(
+      selector: 'example',
+      template: '<ng-content></ng-content>',
+      changeDetection: ChangeDetectionStrategy.OnPush,
+    )
+    class ExampleComponent {
+      ExampleComponent(this._changeDetectorRef);
+
+      final ChangeDetectorRef _changeDetectorRef;
+
+      @ContentChildren(Child),
+      List<Child> children;
+
+      void updateChildren(Model model) {
+        for (final child in children) {
+          // If child is implemented by an onPush component, imperatively
+          // mutating a property like this won't be observed without marking the
+          // child to be checked.
+          child.model = model;
+          _changeDetectorRef.markChildForCheck(child);
+        }
+      }
+    }
+    ```
+
+    Prefer propagating updates to children through the template over this method
+    when possible. This method is intended to faciliate migrating existing
+    components to use OnPush change detection.
+
+    See `ChangeDetectorRef.markChildForCheck()` documentation for more details.
+
+*   The compiler now issues a warning when a component that doesn't use
+    "ChangeDetectionStrategy.OnPush" is used by a component that does. This is
+    unsupported and likely to cause bugs, as the component's change detection
+    contract can't be upheld.
+
+### Breaking changes
+
+*   Warn for all unknown properties in a template.
+
+    Previously, we would skip the warning for tags that contained `-`, as a
+    compatibility layer for custom web elements. Now that most of our users have
+    migrated away from custom elements, such as from Polymer, we are going to
+    strictly enforce unknown properties with a warning.
+
+*   Event bindings no longer support multiple statements.
+
+    Supported:
+
+    ```html
+    <!-- Bind method named "handleClick" (both equivalent) -->
+    <button (click)="handleClick"></button>
+    <button (click)="handleClick($event)"></button>
+
+    <!-- Execute a single statement -->
+    <button (click)="isPopupVisible = true"></button>
+    ```
+
+    Not supported:
+
+    ```html
+    <!-- Execute multiple statements -->
+    <button (click)="isPopupVisible = true; $event.stopPropagation()"></button>
+    ```
+
+    To execute multiple statements, define and bind a method.
+
+*   `TemplateSecurityContext` is no longer exported by
+    `package:angular/security.dart`. This enum is only used during compilation
+    and has no purpose in client code.
+
+## 6.0.0-alpha+1
+
+### New features
+
+*   Added `ComponentRef.update()`. This method should be used to apply changes
+    to a component and then trigger change detection. Before this, change
+    detection and lifecycles would not always follow Angular's specifications
+    when imperatively loading a component, especialy for those using the OnPush
+    change detection strategy.
+
+    ```dart
+    final componentRef = componentFactory();
+    componentRef.update((component) {
+      component.input = newValue;
+    });
+    ```
+
+*   Added `@changeDetectionLink` to `package:angular/experimental.dart`.
+
+    This annotation allows a component that imperatively loads another component
+    from a user-provided factory to adopt the OnPush change detection strategy,
+    without dictacting the change detection strategy of the component created
+    from the factory. This allows such a component to be used in both Default
+    and OnPush apps.
+
+    An annotated component will serve as a link between an ancestor and an
+    imperatively loaded descendant that both use the Default change detection
+    strategy. This link is used to change detect the descendant anytime the
+    ancestor is change detected, thus honoring its Default change detection
+    contract. Without this annotation, the descendant would be skipped anytime
+    the annotated OnPush component had not been marked to be checked.
+
+    For more details, see this annotation's documentation.
+
+## 6.0.0-alpha
+
+### New features
+
+*   An eager error is emitted when a non-`.css` file extension is used within a
+    `@Component(styleUrls: [ ... ])`. This used to fail later in the compile
+    process with a confusing error (cannot find asset).
+
+### Breaking changes
+
+*   The `OnChanges` lifecycle has been completely removed. Use `AfterChanges`
+    instead.
 
 *   `ExceptionHandler` is no longer exported via `angular/di.dart`. Import this
     symbol via `angular/angular.dart` instead.
@@ -6,8 +148,58 @@
 *   Directives no longer support extending, implementing, or mixing in
     `ComponentState`.
 
-*   Directives no longer support `OnChanges` lifecycle. Use `AfterChanges`
-    instead.
+*   The `/deep/` and `>>>` combinators are no longer supported in style sheets
+    of components with style encapsulation enabled. The special `::ng-deep`
+    pseudo-element should be used in their stead to pierce style encapsulation
+    when necessary.
+
+*   `ChangeDetectorRef.checkNoChanges()` has been removed from the public API.
+
+*   Removed `ExpressionChangedAfterItHasBeenCheckedException`. It is supported
+    for end-users to interact with this object (it is now private to the
+    framework).
+
+*   Map literals (i.e. `{foo: bar}`) are no longer supported within the template
+    and throw a compile-time error. Move code that constructs or maintains Map
+    instances inside of your `@Component`-annotated Dart class, or prefer syntax
+    such as `[class.active]="isActive"` over `[ngClass]="{'active': isActive}"`.
+
+*   Asynchronous (i.e. "long") stack traces are now disabled by default, even in
+    debug mode. To enable them for your app or tests, add the following line to
+    your `main()` function before starting an app:
+
+    ```dart
+    import 'package:angular/angular.dart';
+
+    void main() {
+      ExceptionHandler.debugAsyncStackTraces();
+      // Now run your app/tests.
+    }
+    ```
+
+    We would like feedback if this feature is required for your team, otherwise
+    we are considering removing it all together in a future release of
+    AngularDart.
+
+*   `ChangeDetectionStrategy.Stateful` was removed. It always served as an alias
+    for extending or mixing-in `ComponentState`, and was found to be confusing.
+
+### Deprecations
+
+*   Deprecated `ChangeDetectorRef.detach()` and `ChangeDetectorRef.reattach()`.
+    Components that rely on these methods should use `changeDetection:
+    ChangeDetectionStrategy.OnPush` instead.
+
+*   Deprecated `ComponentState`. Under the hood, it now delegates and uses the
+    same mechanisms as `ChangeDetectionStrategy.OnPush`, and it is now
+    recommended to use `ChangeDetectionStrategy.OnPush` over extending or
+    mixing-in the `ComponentState` class.
+
+### Bug fixes
+
+*   Issue a compile-time error on an invalid `styleUrl`. Previously some URLs
+    that were invalid (i.e. an unsupported schema) were skipped, leading to
+    confusing behavior for users.
 
 ## 5.3.0
 
@@ -105,8 +297,8 @@
     own infra.
 
 *   Using anything but `ChangeDetectionStrategy.{Default|OnPush}` is considered
-    deprecated, as they were not intended to be publicly accessible states.
-    See the deprecation messages for details.
+    deprecated, as they were not intended to be publicly accessible states. See
+    the deprecation messages for details.
 
 *   `ViewContainerRef.get()` now returns a `ViewRef` instead of an
     `EmbeddedViewRef`.
@@ -126,13 +318,13 @@
 
 *   `OnChanges` is now officially deprecated. Please use `AfterChanges` instead.
 
-    * If you don't use the `changes` map at all, just remove the parameter and
-    you're good to go.
-    * If you are only tracking the change of one or two fields, consider using a
-    boolean, i.e. `valueChanged`, which can be set in the `value` setter and
-    then checked in `ngAfterChanges`.
-    * If you are making extensive use of the `changes` map, then consider
-    recreating the map manually.
+    *   If you don't use the `changes` map at all, just remove the parameter and
+        you're good to go.
+    *   If you are only tracking the change of one or two fields, consider using
+        a boolean, i.e. `valueChanged`, which can be set in the `value` setter
+        and then checked in `ngAfterChanges`.
+    *   If you are making extensive use of the `changes` map, then consider
+        recreating the map manually.
 
 ## 5.2.0
 
@@ -359,7 +551,7 @@
     Note that internationalization in templates currently only supports messages
     with static text and HTML. See the [example][i18n_example] for more details.
 
-[intl]: https://pub.dartlang.org/packages/intl
+[intl]: https://pub.dev/packages/intl
 [i18n_example]: https://github.com/dart-lang/angular/blob/master/examples/i18n
 
 ### Bug fixes
@@ -499,9 +691,8 @@ this release is not compatible with older versions of Dart 1.XX. Additionally:
 *   _Dartium_ is no longer supported. Instead, use the new
     [DartDevCompiler](https://webdev.dartlang.org/tools/dartdevc)
 *   Pub _transformers_ are no longer used. Instead, use the new
-    [webdev](https://pub.dartlang.org/packages/webdev) CLI, or, for advanced
-    users, the [build_runner](https://pub.dartlang.org/packages/build_runner)
-    CLI.
+    [webdev](https://pub.dev/packages/webdev) CLI, or, for advanced users, the
+    [build_runner](https://pub.dev/packages/build_runner) CLI.
 
 More details of
 [changes to Dart 2 for web users](https://webdev.dartlang.org/dart-2) are
@@ -975,7 +1166,7 @@ everyone).
     annotations (`@Input()`, `@Output()`, `@HostBinding()`, `@HostListener()`)
     instead.
 
-*   The default for `@Component(preserveWhitespace: ...)` is now `true`. Many
+*   The default for `@Component(preserveWhitespace: ...)` is now `false`. Many
     improvements were put into the whitespace optimziation in order to make the
     results easier to understand and work around.
 

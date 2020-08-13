@@ -5,7 +5,7 @@
 language: dart
 
 dart:
-  - dev
+  - stable
 
 # Gives more resources on Travis (8GB Ram, 2CPUs).
 # Do not remove without verifying w/ Travis.
@@ -66,7 +66,7 @@ jobs:
       script: ./tool/travis.sh analyze
       env: PKG="_benchmarks"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="_benchmarks"
       cache:
@@ -74,7 +74,7 @@ jobs:
           - $HOME/.pub-cache
           - _benchmarks/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="_benchmarks"
       cache:
@@ -84,16 +84,12 @@ jobs:
 
       addons:
         chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
 
     - stage: presubmit
       script: ./tool/travis.sh analyze
       env: PKG="_goldens"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="_goldens"
       cache:
@@ -101,7 +97,7 @@ jobs:
           - $HOME/.pub-cache
           - _goldens/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script:
         - cd _goldens
         - ./tool/test.sh
@@ -115,7 +111,7 @@ jobs:
       script: ./tool/travis.sh analyze
       env: PKG="_tests"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="_tests"
       cache:
@@ -123,7 +119,7 @@ jobs:
           - $HOME/.pub-cache
           - _tests/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="_tests"
       cache:
@@ -133,10 +129,6 @@ jobs:
 
       addons:
         chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
 
     - stage: presubmit
       script: ./tool/travis.sh analyze
@@ -146,7 +138,7 @@ jobs:
       script: ./tool/travis.sh analyze
       env: PKG="angular_analyzer_plugin"
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test:nobuild
       env: PKG="angular_analyzer_plugin"
 
@@ -154,7 +146,7 @@ jobs:
       script: ./tool/travis.sh analyze
       env: PKG="angular_ast"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="angular_ast"
       cache:
@@ -162,7 +154,7 @@ jobs:
           - $HOME/.pub-cache
           - angular_ast/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="angular_ast"
       cache:
@@ -174,7 +166,7 @@ jobs:
       script: ./tool/travis.sh analyze
       env: PKG="angular_compiler"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="angular_compiler"
       cache:
@@ -182,7 +174,7 @@ jobs:
           - $HOME/.pub-cache
           - angular_compiler/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="angular_compiler"
       cache:
@@ -194,7 +186,7 @@ jobs:
       script: ./tool/travis.sh analyze
       env: PKG="angular_forms"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="angular_forms"
       cache:
@@ -202,7 +194,7 @@ jobs:
           - $HOME/.pub-cache
           - angular_forms/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="angular_forms"
       cache:
@@ -212,16 +204,12 @@ jobs:
 
       addons:
         chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
 
     - stage: presubmit
       script: ./tool/travis.sh analyze
       env: PKG="angular_router"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="angular_router"
       cache:
@@ -229,7 +217,7 @@ jobs:
           - $HOME/.pub-cache
           - angular_router/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="angular_router"
       cache:
@@ -239,16 +227,12 @@ jobs:
 
       addons:
         chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
 
     - stage: presubmit
       script: ./tool/travis.sh analyze
       env: PKG="angular_test"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="angular_test"
       cache:
@@ -256,7 +240,7 @@ jobs:
           - $HOME/.pub-cache
           - angular_test/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="angular_test"
       cache:
@@ -266,51 +250,20 @@ jobs:
 
       addons:
         chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
 
     - stage: presubmit
       script: ./tool/travis.sh analyze
       env: PKG="dev"
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test:nobuild
       env: PKG="dev"
 
     - stage: presubmit
       script: ./tool/travis.sh analyze
-      env: PKG="examples/github_issues"
-
-    - stage: building
-      script: ./tool/travis.sh build
-      env: PKG="examples/github_issues"
-      cache:
-        directories:
-          - $HOME/.pub-cache
-          - examples/github_issues/.dart_tool
-
-    - stage: testing
-      script: ./tool/travis.sh test
-      env: PKG="examples/github_issues"
-      cache:
-        directories:
-          - $HOME/.pub-cache
-          - examples/github_issues/.dart_tool
-
-      addons:
-        chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
+      env: PKG="examples/hacker_news_pwa"
 
     - stage: presubmit
-      script: ./tool/travis.sh analyze
-      env: PKG="examples/hacker_news_pwa"
-
-    - stage: building
       script: ./tool/travis.sh build
       env: PKG="examples/hacker_news_pwa"
       cache:
@@ -318,7 +271,7 @@ jobs:
           - $HOME/.pub-cache
           - examples/hacker_news_pwa/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="examples/hacker_news_pwa"
       cache:
@@ -328,16 +281,12 @@ jobs:
 
       addons:
         chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
 
     - stage: presubmit
       script: ./tool/travis.sh analyze
       env: PKG="examples/hello_world"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="examples/hello_world"
       cache:
@@ -349,7 +298,7 @@ jobs:
       script: ./tool/travis.sh analyze
       env: PKG="examples/i18n"
 
-    - stage: building
+    - stage: presubmit
       script: ./tool/travis.sh build
       env: PKG="examples/i18n"
       cache:
@@ -357,7 +306,7 @@ jobs:
           - $HOME/.pub-cache
           - examples/i18n/.dart_tool
 
-    - stage: testing
+    - stage: presubmit
       script: ./tool/travis.sh test
       env: PKG="examples/i18n"
       cache:
@@ -367,22 +316,6 @@ jobs:
 
       addons:
         chrome: stable
-      before_install:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start
-        - "t=0; until (xdpyinfo -display :99 &> /dev/null || test $t -gt 10); do sleep 1; let t=$t+1; done"
-
-    - stage: presubmit
-      script: ./tool/travis.sh analyze
-      env: PKG="examples/registration_form"
-
-    - stage: building
-      script: ./tool/travis.sh build
-      env: PKG="examples/registration_form"
-      cache:
-        directories:
-          - $HOME/.pub-cache
-          - examples/registration_form/.dart_tool
 
     # Deploy the PWA application to Firebase.
     # See https://docs.travis-ci.com/user/build-stages/#Build-Stages-and-Deployments.

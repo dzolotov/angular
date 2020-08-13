@@ -1,16 +1,15 @@
 name: angular_forms
-author: Dart Team <misc@dartlang.org>
-homepage: https://github.com/dart-lang/angular
+repository: https://github.com/dart-lang/angular
 description: Forms framework for AngularDart.
-version: 2.1.2
+version: 3.0.0-dev
 
 environment:
-  sdk: ">=2.2.1-dev.3.0 <3.0.0"
+  sdk: ">=2.8.1 <3.0.0"
 
 dependencies:
   angular:
     git:
-      url: https://github.com/dzolotov/angular
+      url: https://github.com/dart-lang/angular
       ref: master
       path: angular
   meta: ^1.1.4
@@ -18,12 +17,12 @@ dependencies:
 dev_dependencies:
   angular_test:
     git:
-      url: https://github.com/dzolotov/angular
+      url: https://github.com/dart-lang/angular
       ref: master
       path: angular_test
   build_runner: ^1.0.0
-  build_test: ^0.10.2+5
-  build_web_compilers: ^1.0.0
+  build_test: ^1.0.0
+  build_web_compilers: ^2.0.0
   mockito: ^3.0.0
   test: ^1.3.0
 

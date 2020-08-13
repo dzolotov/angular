@@ -1,7 +1,9 @@
 import 'dart:html';
 
+import 'package:meta/meta.dart';
 import 'package:angular/src/di/injector/injector.dart' show Injector;
 import 'package:angular/src/runtime.dart';
+
 import 'component_factory.dart' show ComponentFactory, ComponentRef;
 import 'component_loader.dart';
 import 'element_ref.dart';
@@ -58,6 +60,17 @@ class ViewContainer extends ComponentLoader implements ViewContainerRef {
   @override
   Injector get injector => parentView.injector(index);
 
+  @experimental
+  void detectChangesInCheckAlwaysViews() {
+    final nested = nestedViews;
+    if (nested == null) {
+      return;
+    }
+    for (var i = 0, len = nested.length; i < len; i++) {
+      nested[i].detectChangesInCheckAlwaysViews();
+    }
+  }
+
   void detectChangesInNestedViews() {
     final nested = nestedViews;
     if (nested == null) {
@@ -101,6 +114,7 @@ class ViewContainer extends ComponentLoader implements ViewContainerRef {
     return viewRef;
   }
 
+  @override
   ComponentRef<T> createComponent<T>(
     ComponentFactory<T> componentFactory, [
     int index = -1,
@@ -188,8 +202,25 @@ class ViewContainer extends ComponentLoader implements ViewContainerRef {
     return result;
   }
 
+  /// Like [mapNestedViews], but optimized for views with a single result.
+  List<T> mapNestedViewsWithSingleResult<T, U extends DynamicView>(
+    T Function(U) callback,
+  ) {
+    final nestedViews = this.nestedViews;
+    if (nestedViews == null || nestedViews.isEmpty) {
+      return const <Null>[];
+    }
+    final result = <T>[];
+    for (var i = 0, l = nestedViews.length; i < l; i++) {
+      result.add(callback(unsafeCast<U>(nestedViews[i])));
+    }
+    return result;
+  }
+
   Node _findRenderNode(List<DynamicView> views, int index) {
-    return index > 0 ? views[index - 1].lastRootNode : nativeElement;
+    return index > 0
+        ? views[index - 1].viewFragment.findLastDomNode()
+        : nativeElement;
   }
 
   void moveView(DynamicView view, int currentIndex) {

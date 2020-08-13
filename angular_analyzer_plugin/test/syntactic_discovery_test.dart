@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:analyzer/error/error.dart';
 import 'package:analyzer/src/error/codes.dart';
 import 'package:analyzer/src/generated/source.dart';
+import 'package:test/test.dart';
+import 'package:test_reflective_loader/test_reflective_loader.dart';
 import 'package:angular_analyzer_plugin/errors.dart';
 import 'package:angular_analyzer_plugin/src/model/syntactic/component.dart';
 import 'package:angular_analyzer_plugin/src/model/syntactic/directive.dart';
@@ -14,8 +16,6 @@ import 'package:angular_analyzer_plugin/src/model/syntactic/top_level.dart';
 import 'package:angular_analyzer_plugin/src/selector/and_selector.dart';
 import 'package:angular_analyzer_plugin/src/selector/element_name_selector.dart';
 import 'package:angular_analyzer_plugin/src/syntactic_discovery.dart';
-import 'package:test/test.dart';
-import 'package:test_reflective_loader/test_reflective_loader.dart';
 
 import 'angular_base.dart';
 
@@ -69,19 +69,19 @@ class ComponentB {
     expect(directives, hasLength(2));
     {
       final component = directives[0];
-      expect(component, const isInstanceOf<Component>());
+      expect(component, isA<Component>());
       {
         final selector = component.selector;
-        expect(selector, const isInstanceOf<ElementNameSelector>());
+        expect(selector, isA<ElementNameSelector>());
         expect(selector.toString(), 'comp-a');
       }
     }
     {
       final component = directives[1];
-      expect(component, const isInstanceOf<Component>());
+      expect(component, isA<Component>());
       {
         final selector = component.selector;
-        expect(selector, const isInstanceOf<ElementNameSelector>());
+        expect(selector, isA<ElementNameSelector>());
         expect(selector.toString(), 'comp-b');
       }
     }
@@ -104,19 +104,19 @@ class DirectiveB {
     expect(directives, hasLength(2));
     {
       final directive = directives[0];
-      expect(directive, const isInstanceOf<Directive>());
+      expect(directive, isA<Directive>());
       {
         final selector = directive.selector;
-        expect(selector, const isInstanceOf<ElementNameSelector>());
+        expect(selector, isA<ElementNameSelector>());
         expect(selector.toString(), 'dir-a');
       }
     }
     {
       final directive = directives[1];
-      expect(directive, const isInstanceOf<Directive>());
+      expect(directive, isA<Directive>());
       {
         final selector = directive.selector;
-        expect(selector, const isInstanceOf<ElementNameSelector>());
+        expect(selector, isA<ElementNameSelector>());
         expect(selector.toString(), 'dir-b');
       }
     }
@@ -227,9 +227,9 @@ void directiveA() {
     await getDirectives(source);
     expect(directives, hasLength(1));
     final directive = directives.single as FunctionalDirective;
-    expect(directive.functionName, "directiveA");
+    expect(directive.functionName, 'directiveA');
     final selector = directive.selector;
-    expect(selector, const isInstanceOf<AndSelector>());
+    expect(selector, isA<AndSelector>());
     expect((selector as AndSelector).selectors, hasLength(3));
   }
 
@@ -273,8 +273,8 @@ class ContentChildComp {}
     expect(childFields, hasLength(0));
     // validate
     errorListener.assertErrorsWithCodes([
-      CompileTimeErrorCode.NOT_ENOUGH_REQUIRED_ARGUMENTS,
-      CompileTimeErrorCode.NOT_ENOUGH_REQUIRED_ARGUMENTS
+      CompileTimeErrorCode.NOT_ENOUGH_POSITIONAL_ARGUMENTS,
+      CompileTimeErrorCode.NOT_ENOUGH_POSITIONAL_ARGUMENTS
     ]);
   }
 
@@ -301,23 +301,23 @@ class ContentChildComp {}
     final childFields = component.contentChildFields;
     expect(childFields, hasLength(1));
     final child = childFields.first;
-    expect(child.fieldName, equals("contentChild"));
+    expect(child.fieldName, equals('contentChild'));
     expect(
-        child.nameRange.offset, equals(code.indexOf("ContentChildComp) // 1")));
-    expect(child.nameRange.length, equals("ContentChildComp".length));
-    expect(child.typeRange.offset, equals(code.indexOf("ContentChildComp ")));
-    expect(child.typeRange.length, equals("ContentChildComp".length));
+        child.nameRange.offset, equals(code.indexOf('ContentChildComp) // 1')));
+    expect(child.nameRange.length, equals('ContentChildComp'.length));
+    expect(child.typeRange.offset, equals(code.indexOf('ContentChildComp ')));
+    expect(child.typeRange.length, equals('ContentChildComp'.length));
 
     final childrenFields = component.contentChildrenFields;
     expect(childrenFields, hasLength(1));
     final children = childrenFields.first;
-    expect(children.fieldName, equals("contentChildren"));
+    expect(children.fieldName, equals('contentChildren'));
     expect(children.nameRange.offset,
-        equals(code.indexOf("ContentChildComp) // 2")));
-    expect(children.nameRange.length, equals("ContentChildComp".length));
+        equals(code.indexOf('ContentChildComp) // 2')));
+    expect(children.nameRange.length, equals('ContentChildComp'.length));
     expect(children.typeRange.offset,
-        equals(code.indexOf("List<ContentChildComp>")));
-    expect(children.typeRange.length, equals("List<ContentChildComp>".length));
+        equals(code.indexOf('List<ContentChildComp>')));
+    expect(children.typeRange.length, equals('List<ContentChildComp>'.length));
 
     errorListener.assertNoErrors();
   }
@@ -342,11 +342,11 @@ class ContentChildComp {}
     final childFields = component.contentChildFields;
     expect(childFields, hasLength(1));
     final child = childFields.first;
-    expect(child.fieldName, equals("contentChild"));
-    expect(child.nameRange.offset, equals(code.indexOf("ContentChildComp)")));
-    expect(child.nameRange.length, equals("ContentChildComp".length));
-    expect(child.typeRange.offset, equals(code.indexOf("ContentChildComp ")));
-    expect(child.typeRange.length, equals("ContentChildComp".length));
+    expect(child.fieldName, equals('contentChild'));
+    expect(child.nameRange.offset, equals(code.indexOf('ContentChildComp)')));
+    expect(child.nameRange.length, equals('ContentChildComp'.length));
+    expect(child.typeRange.offset, equals(code.indexOf('ContentChildComp ')));
+    expect(child.typeRange.length, equals('ContentChildComp'.length));
     // validate
     errorListener.assertNoErrors();
   }
@@ -371,13 +371,13 @@ class ContentChildComp {}
     final childrenFields = component.contentChildrenFields;
     expect(childrenFields, hasLength(1));
     final children = childrenFields.first;
-    expect(children.fieldName, equals("contentChildren"));
+    expect(children.fieldName, equals('contentChildren'));
     expect(
-        children.nameRange.offset, equals(code.indexOf("ContentChildComp)")));
-    expect(children.nameRange.length, equals("ContentChildComp".length));
+        children.nameRange.offset, equals(code.indexOf('ContentChildComp)')));
+    expect(children.nameRange.length, equals('ContentChildComp'.length));
     expect(children.typeRange.offset,
-        equals(code.indexOf("List<ContentChildComp>")));
-    expect(children.typeRange.length, equals("List<ContentChildComp>".length));
+        equals(code.indexOf('List<ContentChildComp>')));
+    expect(children.typeRange.length, equals('List<ContentChildComp>'.length));
     // validate
     errorListener.assertNoErrors();
   }
@@ -409,7 +409,7 @@ class ComponentA {
     await getDirectives(source);
     // validate
     assertErrorInCodeAtPosition(
-        AngularWarningCode.CANNOT_PARSE_SELECTOR, code, "+");
+        AngularWarningCode.CANNOT_PARSE_SELECTOR, code, '+');
   }
 
   // ignore: non_constant_identifier_names
@@ -446,7 +446,7 @@ class ComponentA {
     final source = newSource('/test.dart', code);
     await getDirectives(source);
     final component = directives.first as Component;
-    expect(component.exports, const isInstanceOf<ListLiteral>());
+    expect(component.exports, isA<ListLiteral>());
     final exports = (component.exports as ListLiteral).items;
     expect(exports, hasLength(3));
     {
@@ -523,7 +523,7 @@ class MyComponent {
     assertErrorInCodeAtPosition(
         AngularWarningCode.INPUT_ANNOTATION_PLACEMENT_INVALID,
         code,
-        "@Input()");
+        '@Input()');
   }
 
   // ignore: non_constant_identifier_names
@@ -601,7 +601,7 @@ class MyComponent {
     assertErrorInCodeAtPosition(
         AngularWarningCode.OUTPUT_ANNOTATION_PLACEMENT_INVALID,
         code,
-        "@Output()");
+        '@Output()');
   }
 
   // ignore: non_constant_identifier_names
@@ -673,12 +673,12 @@ class PipeB extends PipeTransform {
     expect(pipes, hasLength(2));
     {
       final pipe = pipes[0];
-      expect(pipe, const isInstanceOf<Pipe>());
+      expect(pipe, isA<Pipe>());
       expect(pipe.pipeName, 'pipeA');
     }
     {
       final pipe = pipes[1];
-      expect(pipe, const isInstanceOf<Pipe>());
+      expect(pipe, isA<Pipe>());
       expect(pipe.pipeName, 'pipeB');
     }
     errorListener.assertNoErrors();
@@ -699,9 +699,9 @@ abstract class PipeA extends PipeTransform{
     await getDirectives(source);
     expect(pipes, hasLength(1));
     final pipe = pipes[0];
-    expect(pipe, const isInstanceOf<Pipe>());
+    expect(pipe, isA<Pipe>());
     final pipeName = pipe.pipeName;
-    expect(pipeName, const isInstanceOf<String>());
+    expect(pipeName, isA<String>());
     expect(pipeName, 'pipeA');
 
     errorListener
@@ -725,7 +725,7 @@ class ComponentA {
     final source = newSource('/test.dart', code);
     await getDirectives(source);
     final component = directives.first as Component;
-    expect(component.exports, const isInstanceOf<ListLiteral>());
+    expect(component.exports, isA<ListLiteral>());
     final exports = (component.exports as ListLiteral).items;
     expect(exports, hasLength(2));
     {

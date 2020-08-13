@@ -25,8 +25,8 @@ import 'shared.dart' show setUpControl;
 ///
 /// Learn more about `ngModel` in the [Forms][] and [Template Syntax][TS] pages.
 ///
-/// [Forms]: https://webdev.dartlang.org/angular/guide/forms#ngModel
-/// [TS]: https://webdev.dartlang.org/angular/guide/template-syntax#ngModel
+/// [Forms]:  https://angulardart.dev/angular/guide/forms#ngModel
+/// [TS]:  https://angulardart.dev/angular/guide/template-syntax#ngModel
 ///
 /// ### Examples
 ///
@@ -46,7 +46,7 @@ import 'shared.dart' show setUpControl;
 ///
 /// Try the [live example][ex].
 ///
-/// [ex]: https://webdev.dartlang.org/examples/template-syntax/#ngModel
+/// [ex]:  https://angulardart.dev/examples/template-syntax/#ngModel
 @Directive(
   selector: '[ngModel]:not([ngControl]):not([ngFormControl])',
   providers: [
@@ -121,6 +121,7 @@ class NgModel extends NgControl implements AfterChanges, OnInit {
     _control.updateValueAndValidity(emitEvent: false);
   }
 
+  @override
   Control get control => _control;
 
   @override

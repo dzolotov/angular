@@ -42,7 +42,7 @@ class SelectControlValueAccessor extends Object
     implements ControlValueAccessor {
   final SelectElement _element;
   dynamic value;
-  final Map<String, dynamic> _optionMap = Map<String, dynamic>();
+  final Map<String, dynamic> _optionMap = <String, dynamic>{};
   num _idCounter = 0;
 
   SelectControlValueAccessor(HtmlElement element)
@@ -92,7 +92,7 @@ class SelectControlValueAccessor extends Object
 )
 class NgSelectOption implements OnDestroy {
   final OptionElement _element;
-  SelectControlValueAccessor _select;
+  final SelectControlValueAccessor _select;
   String id;
   NgSelectOption(HtmlElement element, @Optional() @Host() this._select)
       : _element = element as OptionElement {

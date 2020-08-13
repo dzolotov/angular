@@ -4,8 +4,45 @@ import 'package:angular/src/core/linker/app_view_utils.dart';
 import 'package:angular/src/runtime.dart';
 import 'package:meta/dart2js.dart' as dart2js;
 
+/// Clears all component styles from the DOM.
+///
+/// This should only be called in development mode, typically to reset `<style>`
+/// tags in the DOM between DDC hot restarts or hermetic test cases.
+void debugClearComponentStyles() {
+  if (!isDevMode) {
+    throw StateError(
+      'This function should only be used in development mode.\n'
+      '\n'
+      'See "debugClearComponentStyles()" documentation for details.',
+    );
+  }
+  ComponentStyles._debugClear();
+}
+
 /// Stores `styles: [ ... ]`,  `styleUrls: [ ... ]` for a given `@Component`.
 class ComponentStyles {
+  /// Callbacks to invoke when [_debugClear] is called.
+  static List<void Function()> _debugClearCallbacks;
+
+  /// See [debugClearComponentStyles].
+  static void _debugClear() {
+    if (_debugClearCallbacks != null) {
+      for (final callback in _debugClearCallbacks) {
+        callback();
+      }
+      _debugClearCallbacks.clear();
+    }
+  }
+
+  /// Registers a [callback] to be called by [_debugClear].
+  ///
+  /// Used to remove all component `<style>` elements in the DOM and clear
+  /// static component styles in generated views.
+  static void debugOnClear(void Function() callback) {
+    _debugClearCallbacks ??= [];
+    _debugClearCallbacks.add(callback);
+  }
+
   /// Originating URL of the `@Component`; used in debug builds only.
   final String _componentUrl;
 
@@ -44,10 +81,10 @@ class ComponentStyles {
 
   ComponentStyles._(
     this._styles,
-    this.contentPrefix,
-    this.hostPrefix, [
-    this._componentId,
-    this._componentUrl,
+    this._componentUrl, [
+    this._componentId = '',
+    this.contentPrefix = '',
+    this.hostPrefix = '',
   ]) {
     _appendStyles();
   }
@@ -58,26 +95,21 @@ class ComponentStyles {
 
   /// Creates a [ComponentStyles] that applies style encapsulation.
   @dart2js.noInline
-  factory ComponentStyles.scoped(
-    List<Object> styles, [
-    String componentUrl,
-  ]) {
+  factory ComponentStyles.scoped(List<Object> styles, String componentUrl) {
     final componentId = '${appViewUtils.appId}-${_nextUniqueId++}';
     return ComponentStyles._(
       styles,
+      componentUrl,
+      componentId,
       '$_viewClassPrefix$componentId',
       '$_hostClassPrefix$componentId',
-      componentId,
-      componentUrl,
     );
   }
 
   /// Creates a [ComponentStyles] that directly appends [styles] to the DOM.
   @dart2js.noInline
-  factory ComponentStyles.unscoped(
-    List<Object> styles, [
-    String componentUrl,
-  ]) = _UnscopedComponentStyles;
+  factory ComponentStyles.unscoped(List<Object> styles, String componentUrl) =
+      _UnscopedComponentStyles;
 
   /// Whether style encapsulation is used by this instance.
   ///
@@ -93,16 +125,21 @@ class ComponentStyles {
     if (isDevMode) {
       target.add('/* From: $_componentUrl*/');
     }
-    final styles = _flattenStyles(_styles, target, _componentId).join('\n');
-    document.head.append(StyleElement()..text = styles);
+    final styles = _flattenStyles(_styles, target, _componentId).join();
+    final styleElement = StyleElement()..text = styles;
+    if (isDevMode) {
+      // Remove style element from the DOM on hot restart.
+      debugOnClear(() {
+        styleElement.remove();
+      });
+    }
+    document.head.append(styleElement);
   }
 }
 
 class _UnscopedComponentStyles extends ComponentStyles {
-  _UnscopedComponentStyles(
-    List<Object> styles, [
-    String componentUrl,
-  ]) : super._(styles, '', '', '', componentUrl);
+  _UnscopedComponentStyles(List<Object> styles, String componentUrl)
+      : super._(styles, componentUrl);
 
   @override
   bool get usesStyleEncapsulation => false;
@@ -112,7 +149,7 @@ class _UnscopedComponentStyles extends ComponentStyles {
 List<String> _flattenStyles(
   List<Object> styles,
   List<String> target,
-  String componentIdOrNull,
+  String componentId,
 ) {
   if (styles == null || styles.isEmpty) {
     return target;
@@ -120,14 +157,10 @@ List<String> _flattenStyles(
   for (var i = 0, l = styles.length; i < l; i++) {
     final styleOrList = styles[i];
     if (styleOrList is List<Object>) {
-      _flattenStyles(
-        styleOrList,
-        target,
-        componentIdOrNull,
-      );
+      _flattenStyles(styleOrList, target, componentId);
     } else {
       final styleString = unsafeCast<String>(styleOrList);
-      target.add(styleString.replaceAll(_idPlaceholder, componentIdOrNull));
+      target.add(styleString.replaceAll(_idPlaceholder, componentId));
     }
   }
   return target;

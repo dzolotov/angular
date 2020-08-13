@@ -13,7 +13,7 @@ import 'invalid_pipe_argument_exception.dart' show InvalidPipeArgumentException;
 ///
 /// ### Usage
 ///
-///     expression | replace:pattern:replacement
+///     $pipe.replace(expression, pattern, replacement)
 ///
 /// All behavior is based on the expected behavior of the JavaScript API
 /// String.prototype.replace() function.
@@ -35,18 +35,18 @@ class ReplacePipe implements PipeTransform {
     if (value == null) {
       return value;
     }
-    if (!this._supportedInput(value)) {
+    if (!_supportedInput(value)) {
       throw InvalidPipeArgumentException(ReplacePipe, value);
     }
     var input = value.toString();
-    if (!this._supportedPattern(pattern)) {
+    if (!_supportedPattern(pattern)) {
       throw InvalidPipeArgumentException(ReplacePipe, pattern);
     }
-    if (!this._supportedReplacement(replacement)) {
+    if (!_supportedReplacement(replacement)) {
       throw InvalidPipeArgumentException(ReplacePipe, replacement);
     }
     // template fails with literal RegExp e.g /pattern/igm
-    if (replacement is _Matcher) {
+    if (replacement is String Function(Match)) {
       var rgxPattern =
           pattern is String ? RegExp(pattern) : (pattern as RegExp);
       return input.replaceAllMapped(rgxPattern, replacement);
@@ -68,5 +68,3 @@ class ReplacePipe implements PipeTransform {
     return replacement is String || replacement is Function;
   }
 }
-
-typedef String _Matcher(Match _);

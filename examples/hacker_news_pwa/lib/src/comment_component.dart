@@ -17,14 +17,13 @@ class CommentComponent {
   final DomSanitizationService _sanitizer;
 
   @Input()
-  Map comment;
+  Map<String, dynamic> comment;
 
   bool hidden = false;
 
   CommentComponent(this._sanitizer);
 
-  SafeHtml get content =>
-      _sanitizer.bypassSecurityTrustHtml(comment['content']);
+  SafeHtml get content => _sanitizer.bypassSecurityTrustHtml(comment['content']);
 
   String get showCommentText => '+${comment['comments_count']}';
 

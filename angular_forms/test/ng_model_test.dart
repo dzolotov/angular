@@ -1,6 +1,7 @@
 @TestOn('browser')
 import 'package:test/test.dart';
 import 'package:angular/angular.dart';
+import 'package:angular/src/runtime.dart';
 import 'package:angular_forms/angular_forms.dart';
 import 'package:angular_test/angular_test.dart';
 
@@ -13,7 +14,7 @@ void main() {
     NgTestFixture<NgModelTest> fixture;
 
     setUp(() async {
-      final testBed = NgTestBed.forComponent(ng.NgModelTestNgFactory);
+      final testBed = NgTestBed.forComponent(ng.createNgModelTestFactory());
       fixture = await testBed.create();
     });
 
@@ -43,7 +44,7 @@ void main() {
 
   test('throws when violating the checkBinding contract', () async {
     final testBed = NgTestBed.forComponent(
-      ng.NgModelWithCheckBindingTestNgFactory,
+      ng.createNgModelWithCheckBindingTestFactory(),
     );
 
     final fixture = await testBed.create();
@@ -51,7 +52,7 @@ void main() {
 
     expect(
       fixture.update((comp) => comp.value = 'Hello'),
-      throwsA(TypeMatcher<ExpressionChangedAfterItHasBeenCheckedException>()),
+      throwsA(TypeMatcher<UnstableExpressionError>()),
       reason: 'Should throw due to checkBinding',
     );
   });

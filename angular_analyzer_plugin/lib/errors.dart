@@ -48,7 +48,6 @@ const _angularWarningCodeValues = <AngularWarningCode>[
   AngularWarningCode.INVALID_TYPE_FOR_CHILD_QUERY,
   AngularWarningCode.UNKNOWN_CHILD_QUERY_TYPE,
   AngularWarningCode.CHILD_QUERY_TYPE_REQUIRES_READ,
-  AngularWarningCode.CONTENT_OR_VIEW_CHILDREN_REQUIRES_QUERY_LIST,
   AngularWarningCode.CONTENT_OR_VIEW_CHILDREN_REQUIRES_LIST,
   AngularWarningCode.MATCHED_LET_BINDING_HAS_WRONG_TYPE,
   AngularWarningCode.EXPORTS_MUST_BE_PLAIN_IDENTIFIERS,
@@ -350,7 +349,7 @@ class AngularWarningCode extends ErrorCode {
   /// An error for when an output-binding is not an [ExpressionStatement].
   static const OUTPUT_STATEMENT_REQUIRES_EXPRESSION_STATEMENT =
       AngularWarningCode('OUTPUT_STATEMENT_REQUIRES_EXPRESSION_STATEMENT',
-          "Syntax Error: unexpected {0}");
+          'Syntax Error: unexpected {0}');
 
   /// An error for when a dart expression in a template uses unsupported dart
   /// syntax.
@@ -358,7 +357,7 @@ class AngularWarningCode extends ErrorCode {
   /// Unsupported syntax includes expressions such as 'as' expressions and
   /// constructors.
   static const DISALLOWED_EXPRESSION = AngularWarningCode(
-      'DISALLOWED_EXPRESSION', "{0} not allowed in angular templates");
+      'DISALLOWED_EXPRESSION', '{0} not allowed in angular templates');
 
   /// An error for when dom inside a component won't be transcluded.
   static const CONTENT_NOT_TRANSCLUDED = AngularWarningCode(
@@ -416,18 +415,6 @@ class AngularWarningCode extends ErrorCode {
       'CONTENT_OR_VIEW_CHILDREN_REQUIRES_LIST',
       'The field {0} marked with @{1} expects a member of type List,'
           ' but got {2}');
-
-  /// Here for backwards compatibility.
-  ///
-  /// Should not be used. Use [CONTENT_OR_VIEW_CHILDREN_REQUIRES_LIST] instead.
-  /// Note: we can remove this the next time we tick the salt in
-  /// `lib/src/file_tracker.dart`.
-  @deprecated
-  static const CONTENT_OR_VIEW_CHILDREN_REQUIRES_QUERY_LIST =
-      AngularWarningCode(
-          'CONTENT_OR_VIEW_CHILDREN_REQUIRES_QUERY_LIST',
-          'The field {0} marked with @{1} expects a member of type QueryList,'
-              ' but got {2}');
 
   /// An error for when a let-bound @ContentChild or @ViewChild was matched but
   /// isn't assignable.
@@ -505,14 +492,14 @@ class AngularWarningCode extends ErrorCode {
   /// An error for when pipe syntax is used but does not match a pipe name.
   static const PIPE_NOT_FOUND = AngularWarningCode(
       'PIPE_NOT_FOUND',
-      "Pipe by name of {0} not found. Did you reference it in your @Component"
-          " configuration?");
+      'Pipe by name of {0} not found. Did you reference it in your @Component'
+          ' configuration?');
 
   /// An error for when pipe syntax is used but the name matches multiple pipes.
   static const AMBIGUOUS_PIPE = AngularWarningCode(
       'AMBIGUOUS_PIPE',
-      "Multiple pipes by name of {0} found. Check the `pipes` field of your "
-          "@Component annotation for duplicates and/or conflicts.");
+      'Multiple pipes by name of {0} found. Check the `pipes` field of your '
+          '@Component annotation for duplicates and/or conflicts.');
 
   /// An error for when a security exception will be thrown by an input binding.
   static const UNSAFE_BINDING = AngularWarningCode(

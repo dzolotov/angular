@@ -35,6 +35,30 @@ void main() {
     ]);
   });
 
+  test('should error on invalid use of const', () async {
+    await compilesExpecting('''
+      import '$ngImport';
+
+      @Component(
+        selector: 'bad-comp',
+        directives:  [
+          const UndeclaredIdentifier,
+        ],
+        template: '',
+      )
+      class BadComp {}
+    ''', errors: [
+      allOf([
+        // This is an UnresolvedExpressionException, but it should
+        // be an AnalysisError, reading "@Component-annotated" instead.
+        contains('Compiling @Component annotated class "BadComp" failed'),
+        // Once b/134096969 is fixed, these expectations should be true:
+        // contains('Compiling @Component-annotated class "BadComp" failed'),
+        // containsSourceLocation(6, 11), // points to 'const Undeclared..'
+      ]),
+    ]);
+  });
+
   test('should error on an incorrect member annotation', () async {
     // NOTE: @Input on BadComp.inValue is invalid.
     await compilesExpecting('''
@@ -92,7 +116,7 @@ void main() {
       )
       bool functionDirective() {};
 
-      
+
     ''', errors: [
       allOf(
           contains('Compiling annotation @Directive'),
@@ -119,7 +143,7 @@ void main() {
       allOf([
         isNot(contains(
             "The argument type 'int' can't be assigned to the parameter type 'String'")),
-        isNot(contains("neverMentionFour"))
+        isNot(contains('neverMentionFour'))
       ]),
     ]);
   });
@@ -217,7 +241,7 @@ void main() {
   test('should throw on unused directive types', () async {
     await compilesExpecting('''
     import '$ngImport';
-    
+
     @Component(
       selector: 'generic',
       template: 'Bye',
@@ -225,15 +249,15 @@ void main() {
     class GenericComponent<T> {
       GenericComponent() {}
     }
-    
+
     @Component(
       selector: 'mis-match',
       template: 'Aye',
       directves: [],
       directiveTypes: [Typed<GenericComponent<String>>()])
-      
+
       class ExampleComponent {}
- 
+
     ''', errors: [
       allOf([
         contains('Entry in "directiveTypes" missing corresponding entry in'
@@ -291,24 +315,6 @@ void main() {
       allOf([
         contains('ngDoCheck should not be "async"'),
         containsSourceLocation(8, 12)
-      ])
-    ]);
-  });
-
-  test('should throw on DoCheck and OnChanges', () async {
-    await compilesExpecting('''
-    import '$ngImport';
-
-    @Component(
-      selector: 'do-check-and-on-changes',
-      template: 'boo'
-    )
-    class DoCheckAndOnChanges implements DoCheck, OnChanges {}
-    ''', errors: [
-      allOf([
-        contains(
-            'Cannot implement both the DoCheck and OnChanges lifecycle events'),
-        containsSourceLocation(7, 11)
       ])
     ]);
   });

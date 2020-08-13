@@ -52,6 +52,55 @@ abstract class ChangeDetectorRef {
   /// ultimately marks the component or widget as dirty.
   void markForCheck();
 
+  /// Invokes [markForCheck] on [child]'s associated [ChangeDetectorRef].
+  ///
+  /// This only works if [child] is a component instance obtained from any of
+  /// the following annotations:
+  ///
+  ///   * `@ContentChild()`
+  ///   * `@ContentChildren()`
+  ///   * `@ViewChild()`
+  ///   * `@ViewChildren()`
+  ///
+  /// Note that the static type of [child] need not be a component so long as
+  /// the underlying implementation is.
+  ///
+  /// On any other argument, this method is still safe to call, but has no
+  /// effect. This allows the caller to use this method without explicit
+  /// knowledge of whether or not [child] is backed by a component using
+  /// `ChangeDetectionStrategy.OnPush`.
+  ///
+  /// ```
+  /// @Component(
+  ///   selector: 'example',
+  ///   template: '<ng-content></ng-content>',
+  ///   changeDetection: ChangeDetectionStrategy.OnPush,
+  /// )
+  /// class ExampleComponent {
+  ///   ExampleComponent(this._changeDetectorRef);
+  ///
+  ///   final ChangeDetectorRef _changeDetectorRef;
+  ///
+  ///   @ContentChildren(Child)
+  ///   List<Child> children;
+  ///
+  ///   void updateChildren(Model model) {
+  ///     for (final child in children) {
+  ///       // If child is implemented by an OnPush component, imperatively
+  ///       // mutating a property like this won't be observed without marking
+  ///       // the child to be checked.
+  ///       child.model = model;
+  ///       _changeDetectorRef.markChildForCheck(child);
+  ///     }
+  ///   }
+  /// }
+  /// ```
+  ///
+  /// Prefer propagating updates to children through the template over this
+  /// method when possible. This method is intended as a last resort to
+  /// facilitate migrating components to use `ChangeDetectionStrategy.OnPush`.
+  void markChildForCheck(Object child);
+
   /// Detaches the component from the change detection hierarchy.
   ///
   /// A component whose change detector has been detached will be skipped during
@@ -70,6 +119,7 @@ abstract class ChangeDetectorRef {
   /// **WARNING**: This API should be considered rather _rare_. Strongly
   /// consider reaching out if you have a bug or performance issue that leads
   /// to using [detach] over `ChangeDetectionStrategy.OnPush` / [markForCheck].
+  @Deprecated('Use "changeDetection: ChangeDetectionStrategy.OnPush" instead')
   void detach();
 
   /// Reattaches a component that was [detach]-ed previously from the hierarchy.
@@ -78,6 +128,7 @@ abstract class ChangeDetectorRef {
   /// will be checked for changes during the next change detection run. See the
   /// docs around [detach] for details of how detaching works and why this
   /// method invocation should be rare.
+  @Deprecated('Use "changeDetection: ChangeDetectionStrategy.OnPush" instead')
   void reattach();
 
   /// Forces synchronous change detection of this component and its children.
@@ -96,12 +147,4 @@ abstract class ChangeDetectorRef {
   /// also worth filing a bug if this is needed.
   @Deprecated('Breaks assumptions around change detection and will be removed')
   void detectChanges();
-
-  /// Forces synchronous change detection, failing if any bindings have changed.
-  ///
-  /// **WARNING**: In practice, this API was not intended to be public and was
-  /// for creating testing and local debugging infrastructure. A future version
-  /// of Angular will remove it from the public API entirely.
-  @Deprecated('Not intended be public API and will be removed')
-  void checkNoChanges();
 }

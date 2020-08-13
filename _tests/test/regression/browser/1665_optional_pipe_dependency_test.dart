@@ -9,7 +9,7 @@ void main() {
   tearDown(disposeAnyRunningTest);
 
   test('a missing @Optional() pipe dependency does not throw', () async {
-    var testBed = NgTestBed.forComponent(ng.TestComponentNgFactory);
+    var testBed = NgTestBed.forComponent(ng.createTestComponentFactory());
     expect(testBed.create(), completes);
   });
 }
@@ -17,7 +17,7 @@ void main() {
 abstract class TestService {}
 
 @Pipe('test')
-class TestPipe {
+class TestPipe extends PipeTransform {
   TestPipe(@Optional() TestService _);
 
   dynamic transform(dynamic value) => value;

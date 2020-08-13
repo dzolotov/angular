@@ -1,9 +1,22 @@
+*   Release for `2.0.0`.
+
+## 2.0.0-alpha+24
+
+*   Maintenance release to support Angular 6.0-alpha+1.
+
+## 2.0.0-alpha+23
+
 ### Bug fixes
 
 *   Navigation requests triggered by `popstate` events that redirect back to the
     active route will now correctly update the browser location to match the
     active route. Prior to this fix, the browser location would be left in the
     state changed by the `popstate` event.
+
+*   The history stack prior to the current entry is now preserved when
+    preventing a navigation triggered by the back button. Previously, preventing
+    such a navigation would erase the previous history entry, causing subsequent
+    history manipulations to have unexpected results.
 
 ## 2.0.0-alpha+22
 

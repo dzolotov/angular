@@ -4,9 +4,10 @@ import 'dart:async';
 import 'package:angular/angular.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
+import 'package:angular/src/core/zone/ng_zone.dart';
 
 // Schedules a microtasks (using a resolved promise .then())
-void microTask(void fn()) {
+void microTask(void Function() fn) {
   scheduleMicrotask(() {
     // We do double dispatch so that we  can wait for scheduleMicrotasks in
     // the Testability when NgZone becomes stable.
@@ -21,7 +22,9 @@ abstract class TestabilityCallback {
 class MockCallback extends Mock implements TestabilityCallback {}
 
 @Injectable()
-class TestZone extends NgZone {
+class TestZone implements NgZone {
+  final _delegate = NgZone();
+
   StreamController<Null> _onUnstableStream;
 
   @override
@@ -36,17 +39,61 @@ class TestZone extends NgZone {
     return _onStableStream.stream;
   }
 
-  TestZone() : super(enableLongStackTrace: false) {
+  TestZone() {
     _onUnstableStream = StreamController.broadcast(sync: true);
     _onStableStream = StreamController.broadcast(sync: true);
   }
+
   void unstable() {
-    this._onUnstableStream.add(null);
+    _onUnstableStream.add(null);
   }
 
   void stable() {
-    this._onStableStream.add(null);
+    _onStableStream.add(null);
   }
+
+  @override
+  void dispose() => _delegate.dispose();
+
+  @override
+  bool get hasPendingMacrotasks => _delegate.hasPendingMacrotasks;
+
+  @override
+  bool get hasPendingMicrotasks => _delegate.hasPendingMicrotasks;
+
+  @override
+  bool get inInnerZone => _delegate.inInnerZone;
+
+  @override
+  bool get inOuterZone => _delegate.inOuterZone;
+
+  @override
+  bool get isRunning => _delegate.isRunning;
+
+  @override
+  Stream<NgZoneError> get onError => _delegate.onError;
+
+  @override
+  Stream<void> get onEventDone => _delegate.onEventDone;
+
+  @override
+  Stream<void> get onMicrotaskEmpty => _delegate.onMicrotaskEmpty;
+
+  @override
+  R run<R>(callback) => _delegate.run(callback);
+
+  @override
+  void runAfterChangesObserved(callback) {
+    _delegate.runAfterChangesObserved(callback);
+  }
+
+  @override
+  void runGuarded(callback) {
+    _delegate.runGuarded(callback);
+  }
+
+  @override
+  R runOutsideAngular<R>(callback) => _delegate.runOutsideAngular(callback);
 }
 
 void main() {

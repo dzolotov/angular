@@ -4,11 +4,9 @@ import 'package:_tests/matchers.dart';
 import 'package:angular/angular.dart';
 import 'package:angular_test/angular_test.dart';
 
-import 'slice_pipe_test.template.dart' as ng_generated;
+import 'slice_pipe_test.template.dart' as ng;
 
 void main() {
-  ng_generated.initReflector();
-
   group('SlicePipe', () {
     List<num> list;
     var str;
@@ -78,15 +76,15 @@ void main() {
     });
     group('integration', () {
       test('should work with mutable arrays', () async {
-        var testBed = NgTestBed<TestComp>();
+        var testBed = NgTestBed.forComponent(ng.createTestCompFactory());
         var testFixture = await testBed.create();
         var el = testFixture.rootElement;
-        List<num> mutable = [1, 2];
-        await testFixture.update((TestComp comp) {
+        var mutable = <num>[1, 2];
+        await testFixture.update((comp) {
           comp.data = mutable;
         });
         expect(el, hasTextContent('2'));
-        await testFixture.update((TestComp comp) {
+        await testFixture.update((comp) {
           mutable.add(3);
         });
         expect(el, hasTextContent('2,3'));

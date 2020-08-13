@@ -15,7 +15,7 @@ void main() {
 
   test('ChangeDetectionStrategy.Detached should behave strangely', () async {
     final testBed = NgTestBed.forComponent<TestDetachedViaStrategy>(
-      ng.TestDetachedViaStrategyNgFactory,
+      ng.createTestDetachedViaStrategyFactory(),
     );
 
     final fixture = await testBed.create(beforeChangeDetection: (comp) {
@@ -58,6 +58,7 @@ void main() {
 
     await fixture.update((comp) {
       comp.logs = logs = [];
+      // ignore: deprecated_member_use
       comp.child.reattach();
     });
 
@@ -76,7 +77,7 @@ void main() {
 
   test('ChangeDetectorRef.detach() shoud behave mostly sane', () async {
     final testBed = NgTestBed.forComponent<TestDetachedViaRef>(
-      ng.TestDetachedViaRefNgFactory,
+      ng.createTestDetachedViaRefFactory(),
     );
 
     final fixture = await testBed.create(beforeChangeDetection: (comp) {
@@ -119,6 +120,7 @@ void main() {
 
     await fixture.update((comp) {
       comp.logs = logs = [];
+      // ignore: deprecated_member_use
       comp.child.reattach();
     });
 
@@ -228,6 +230,7 @@ class DetachedViaStrategy extends Logger {}
 )
 class DetachedViaRef extends Logger {
   DetachedViaRef(ChangeDetectorRef changeDetectorRef) {
+    // ignore: deprecated_member_use
     changeDetectorRef.detach();
   }
 }

@@ -170,8 +170,8 @@ void main() {
       () => testBed.create(),
       throwsA(
         predicate(
-          (e) => '$e'.contains('No provider found for $MissingService: '
-              '$InjectsMissingService -> $MissingService'),
+          (e) => '$e'.contains('No provider found for $MissingService:\n  '
+              '$InjectsMissingService ->\n  $MissingService'),
         ),
       ),
     );
@@ -183,8 +183,8 @@ void main() {
       () => testBed.create(),
       throwsA(
         predicate(
-          (e) => '$e'.contains('No provider found for $MissingService: '
-              '$WillFailInjecting1Node -> $MissingService'),
+          (e) => '$e'.contains('No provider found for $MissingService:\n  '
+              '$WillFailInjecting1Node ->\n  $MissingService'),
         ),
       ),
     );
@@ -196,8 +196,8 @@ void main() {
       () => testBed.create(),
       throwsA(
         predicate(
-          (e) => '$e'.contains('No provider found for $MissingService: '
-              '$WillFailInjecting1Node -> $MissingService'),
+          (e) => '$e'.contains('No provider found for $MissingService:\n  '
+              '$WillFailInjecting1Node ->\n  $MissingService'),
         ),
       ),
     );
@@ -209,8 +209,8 @@ void main() {
       () => testBed.create(),
       throwsA(
         predicate(
-          (e) => '$e'.contains('No provider found for $MissingService: '
-              '$InjectsMissingService -> $MissingService'),
+          (e) => '$e'.contains('No provider found for $MissingService:\n  '
+              '$InjectsMissingService ->\n  $MissingService'),
         ),
       ),
     );
@@ -222,8 +222,8 @@ void main() {
       () => testBed.create(),
       throwsA(
         predicate(
-          (e) => '$e'.contains('No provider found for $MissingService: '
-              '$InjectsMissingService -> $MissingService'),
+          (e) => '$e'.contains('No provider found for $MissingService:\n  '
+              '$InjectsMissingService ->\n  $MissingService'),
         ),
       ),
     );
@@ -235,8 +235,8 @@ void main() {
       () => testBed.create(),
       throwsA(
         predicate(
-          (e) => '$e'.contains('No provider found for $MissingService: '
-              '$PrimeInjectsMissingService -> $MissingService'),
+          (e) => '$e'.contains('No provider found for $MissingService:\n  '
+              '$PrimeInjectsMissingService ->\n  $MissingService'),
         ),
       ),
     );
@@ -257,9 +257,9 @@ void main() {
       throwsA(
         predicate(
           (e) => '$e'.contains(''
-              'No provider found for $MissingService: '
-              '$WillFailInjecting2NodeParent -> $InjectsMissingService -> '
-              '$MissingService.'),
+              'No provider found for $MissingService:\n  '
+              '$WillFailInjecting2NodeParent ->\n  '
+              '$InjectsMissingService ->\n  $MissingService.'),
         ),
       ),
     );
@@ -267,13 +267,13 @@ void main() {
 
   test('should treat an OpaqueToken identical to @Inject', () async {
     final fixture = await NgTestBed<InjectsBaseUrl>().create();
-    final InjectsBaseUrl service = fixture.assertOnlyInstance;
+    final service = fixture.assertOnlyInstance;
     expect(service.url, 'https://site.com/api/');
   });
 
   test('should support a custom OpaqueToken', () async {
     final fixture = await NgTestBed<InjectsXsrfToken>().create();
-    final InjectsXsrfToken service = fixture.assertOnlyInstance;
+    final service = fixture.assertOnlyInstance;
     expect(service.token, 'ABC123');
   });
 
@@ -428,7 +428,7 @@ const usPresidentsToken = OpaqueToken<String>('usPresidents');
       multi: true,
     ),
   ],
-  template: "{{usPresidents}}",
+  template: '{{usPresidents}}',
 )
 class ReifiedMultiGenerics {
   final List<String> usPresidents;
@@ -523,7 +523,7 @@ class CustomMultiToken extends MultiToken<String> {
 class SupportsCustomMultiToken {
   final List<String> values;
 
-  SupportsCustomMultiToken(@Inject(const CustomMultiToken()) this.values);
+  SupportsCustomMultiToken(@Inject(CustomMultiToken()) this.values);
 }
 
 const fooOpaqueToken = OpaqueToken<String>('fooToken');

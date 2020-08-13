@@ -18,6 +18,7 @@ AbstractControl _find(AbstractControl control, List<String> path) {
   });
 }
 
+@optionalTypeArgs
 abstract class AbstractControl<T> {
   /// Indicates that a Control is valid, i.e. that no errors exist in the input
   /// value.
@@ -305,7 +306,7 @@ abstract class AbstractControl<T> {
   /// to match on index.
   AbstractControl findPath(List<String> path) => _find(this, path);
 
-  getError(String errorCode, [List<String> path]) {
+  dynamic getError(String errorCode, [List<String> path]) {
     AbstractControl control = this;
     if (path != null && path.isNotEmpty) {
       control = findPath(path);
@@ -386,9 +387,9 @@ abstract class AbstractControl<T> {
   bool _anyControlsTouched() => _anyControls((c) => c.touched);
   bool _anyControlsDirty() => _anyControls((c) => c.dirty);
 
-  void _forEachChild(void callback(AbstractControl c));
+  void _forEachChild(void Function(AbstractControl) callback);
 
-  bool _anyControls(bool condition(AbstractControl c));
+  bool _anyControls(bool Function(AbstractControl) condition);
 }
 
 /// Defines a part of a form that cannot be divided into other controls.
@@ -405,6 +406,7 @@ abstract class AbstractControl<T> {
 /// With [NgFormControl] or [NgFormModel] an existing [Control] can be
 /// bound to a DOM element instead. This `Control` can be configured with a
 /// custom validation function.
+@optionalTypeArgs
 class Control<T> extends AbstractControl<T> {
   Function _onChange;
   String _rawValue;
@@ -415,9 +417,10 @@ class Control<T> extends AbstractControl<T> {
   /// Set the value of the control to `value`.
   ///
   /// If `onlySelf` is `true`, this change will only affect the validation of
-  /// this `Control` and not its parent component. If `emitEvent` is `true`,
-  /// this change will cause a `valueChanges` event on the `Control` to be
-  /// emitted. Both of these options default to `false`.
+  /// this `Control` and not its parent component. This defaults to `false`.
+  ///
+  /// If `emitEvent` is `true`, this change will cause a `valueChanges` event on
+  /// the `Control` to be emitted. This defaults to `true`.
   ///
   /// If `emitModelToViewChange` is `true`, the view will be notified about the
   /// new value via an `onChange` event. This is the default behavior if
@@ -452,7 +455,7 @@ class Control<T> extends AbstractControl<T> {
   bool _allControlsHaveStatus(String status) => this.status == status;
 
   @override
-  void _forEachChild(void callback(AbstractControl c)) {}
+  void _forEachChild(void Function(AbstractControl) callback) {}
 
   /// Register a listener for change events.
   ///
@@ -535,6 +538,7 @@ class ControlGroup extends AbstractControlGroup<Map<String, dynamic>> {
 
 /// Generic control group that allows creating your own group that is backed
 /// by a value that is not a Map.
+@optionalTypeArgs
 abstract class AbstractControlGroup<T> extends AbstractControl<T> {
   final Map<String, AbstractControl> controls;
 
@@ -559,7 +563,7 @@ abstract class AbstractControlGroup<T> extends AbstractControl<T> {
       controls.containsKey(controlName) && controls[controlName].enabled;
 
   @override
-  bool _anyControls(bool condition(AbstractControl c)) {
+  bool _anyControls(bool Function(AbstractControl) condition) {
     for (var name in controls.keys) {
       if (contains(name) && condition(controls[name])) return true;
     }
@@ -577,7 +581,7 @@ abstract class AbstractControlGroup<T> extends AbstractControl<T> {
   }
 
   @override
-  void _forEachChild(void callback(AbstractControl c)) {
+  void _forEachChild(void Function(AbstractControl) callback) {
     for (var control in controls.values) {
       callback(control);
     }
@@ -649,7 +653,7 @@ class ControlArray extends AbstractControl<List> {
     // Treat empty and null as the same.
     if (value?.isEmpty ?? false) value = null;
     _checkAllValuesPresent(value);
-    for (int i = 0; i < controls.length; i++) {
+    for (var i = 0; i < controls.length; i++) {
       controls[i].updateValue(value == null ? null : value[i],
           onlySelf: true,
           emitEvent: emitEvent,
@@ -669,7 +673,7 @@ class ControlArray extends AbstractControl<List> {
   }
 
   @override
-  bool _anyControls(bool condition(AbstractControl c)) {
+  bool _anyControls(bool Function(AbstractControl) condition) {
     for (var control in controls) {
       if (condition(control)) return true;
     }
@@ -687,7 +691,7 @@ class ControlArray extends AbstractControl<List> {
   }
 
   @override
-  void _forEachChild(void callback(AbstractControl c)) {
+  void _forEachChild(void Function(AbstractControl) callback) {
     for (var control in controls) {
       callback(control);
     }

@@ -10,19 +10,19 @@ import 'package:angular_test/angular_test.dart';
 import 'router_hook_test.template.dart' as ng;
 
 void main() {
+  tearDown(() {
+    testRouterHook.reset();
+    return disposeAnyRunningTest();
+  });
+
   group('RouterHook', () {
     Router router;
 
     setUp(() async {
-      final testBed = NgTestBed.forComponent(ng.TestAppComponentNgFactory)
+      final testBed = NgTestBed.forComponent(ng.createTestAppComponentFactory())
           .addInjector(createInjector);
       final testFixture = await testBed.create();
       router = testFixture.assertOnlyInstance.router;
-    });
-
-    tearDown(() {
-      disposeAnyRunningTest();
-      testRouterHook.reset();
     });
 
     test('canActivate should block navigation', () async {
@@ -64,6 +64,23 @@ void main() {
       expect(IndexComponent.instanceCount, 1);
     });
   });
+
+  test('can support cyclic dependency with lazy injection', () async {
+    final testBed = NgTestBed.forComponent(ng.createTestAppComponentFactory())
+        .addInjector(accumulateQueryHookInjector);
+    final testFixture = await testBed.create();
+    final router = testFixture.assertOnlyInstance.router;
+    expect(router.current.queryParameters, isEmpty);
+    var navigationResult = await router.navigate(
+        '/foo', NavigationParams(queryParameters: {'a': 'b'}));
+    expect(navigationResult, NavigationResult.SUCCESS);
+    expect(router.current.queryParameters, {'a': 'b'});
+    // Router hook should combine new query parameters with existing ones.
+    navigationResult = await router.navigate(
+        '/foo', NavigationParams(queryParameters: {'x': 'y'}));
+    expect(navigationResult, NavigationResult.SUCCESS);
+    expect(router.current.queryParameters, {'a': 'b', 'x': 'y'});
+  });
 }
 
 @GenerateInjector([
@@ -84,8 +101,9 @@ class TestAppComponent {
   static final fooPath = '/foo';
   static final indexPath = '';
   static final routes = [
-    RouteDefinition(path: fooPath, component: ng.FooComponentNgFactory),
-    RouteDefinition(path: indexPath, component: ng.IndexComponentNgFactory),
+    RouteDefinition(path: fooPath, component: ng.createFooComponentFactory()),
+    RouteDefinition(
+        path: indexPath, component: ng.createIndexComponentFactory()),
   ];
   final Router router;
 
@@ -166,5 +184,31 @@ class TestRouterHook extends RouterHook {
     canDeactivateFn = null;
     canNavigateFn = null;
     canReuseFn = null;
+  }
+}
+
+@GenerateInjector([
+  ClassProvider(RouterHook, useClass: AccumulateQueryHook),
+  routerProvidersTest,
+])
+final accumulateQueryHookInjector = ng.accumulateQueryHookInjector$Injector;
+
+class AccumulateQueryHook extends RouterHook {
+  AccumulateQueryHook(this._injector);
+
+  final Injector _injector;
+
+  // Lazily inject `Router` to avoid cyclic dependency.
+  Router _router;
+  Router get router => _router ??= _injector.provideType(Router);
+
+  @override
+  Future<NavigationParams> navigationParams(String _, NavigationParams params) {
+    return Future.value(NavigationParams(
+      queryParameters: {
+        ...?router.current?.queryParameters,
+        ...params.queryParameters,
+      },
+    ));
   }
 }

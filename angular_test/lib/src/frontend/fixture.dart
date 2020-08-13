@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular/angular.dart';
+import 'package:angular/src/runtime.dart' show isDevMode;
 
 import 'bed.dart';
 import 'stabilizer.dart';
@@ -42,6 +43,9 @@ class NgTestFixture<T> {
     _rootComponentRef.destroy();
     _rootComponentRef.location.parent.remove();
     _applicationRef.dispose();
+    if (isDevMode) {
+      debugClearComponentStyles();
+    }
     activeTest = null;
   }
 
@@ -70,7 +74,7 @@ class NgTestFixture<T> {
     return _testStabilizer.stabilize(runAndTrackSideEffects: () {
       if (run != null) {
         Future<void>.sync(() {
-          run(_rootComponentRef.instance);
+          _rootComponentRef.update(run);
         });
       }
     });

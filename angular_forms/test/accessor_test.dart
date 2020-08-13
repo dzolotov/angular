@@ -7,19 +7,18 @@ import 'package:angular/angular.dart';
 import 'package:angular_forms/angular_forms.dart';
 import 'package:angular_test/angular_test.dart';
 
-import 'accessor_test.template.dart' as ng_generated;
+import 'accessor_test.template.dart' as ng;
 
 void main() {
-  ng_generated.initReflector();
-
   group('accessor test', () {
     tearDown(disposeAnyRunningTest);
 
     test('should have error on invalid input', () async {
-      var testBed = NgTestBed<AccessorTestComponent>();
-      NgTestFixture<AccessorTestComponent> fixture = await testBed.create();
+      var testBed =
+          NgTestBed.forComponent(ng.createAccessorTestComponentFactory());
+      var fixture = await testBed.create();
 
-      await fixture.update((AccessorTestComponent c) {
+      await fixture.update((c) {
         (c.model.valueAccessor as IntValueAccessor).onChange('aaa');
 
         expect(c.model.value, null);
@@ -30,10 +29,11 @@ void main() {
     });
 
     test('shouldn\'t have error on valid input', () async {
-      var testBed = NgTestBed<AccessorTestComponent>();
-      NgTestFixture<AccessorTestComponent> fixture = await testBed.create();
+      var testBed =
+          NgTestBed.forComponent(ng.createAccessorTestComponentFactory());
+      var fixture = await testBed.create();
 
-      await fixture.update((AccessorTestComponent c) {
+      await fixture.update((c) {
         (c.model.valueAccessor as IntValueAccessor).onChange('5');
 
         expect(c.value, 5);
@@ -57,17 +57,17 @@ class AccessorTestComponent {
   int value = 1;
 }
 
-typedef dynamic ChangeFunctionSimple(value);
+typedef ChangeFunctionSimple = dynamic Function(dynamic value);
 
 @Directive(
-  selector: "input[integer]",
+  selector: 'input[integer]',
   providers: [
     ExistingProvider.forToken(ngValueAccessor, IntValueAccessor),
     ExistingProvider.forToken(NG_VALIDATORS, IntValueAccessor),
   ],
 )
 class IntValueAccessor implements ControlValueAccessor, Validator {
-  HtmlElement _elementRef;
+  final HtmlElement _elementRef;
 
   @HostListener('input')
   void onChangeBinding() => onChange(null);
@@ -91,7 +91,7 @@ class IntValueAccessor implements ControlValueAccessor, Validator {
 
   @override
   void registerOnChange(ChangeFunction fn) {
-    this.onChange = (value) {
+    onChange = (value) {
       var result;
       try {
         result = int.parse(value);
@@ -104,7 +104,7 @@ class IntValueAccessor implements ControlValueAccessor, Validator {
 
   @override
   void registerOnTouched(TouchFunction fn) {
-    this.onTouched = fn;
+    onTouched = fn;
   }
 
   @override
